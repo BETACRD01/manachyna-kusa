@@ -1,24 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-} from "react-native"
-import { useRouter } from "expo-router"
-import { PhoneIcon, UserIcon, LockIcon, EyeIcon, EyeOffIcon } from "lucide-react-native"
+import { Phone, User, Lock, Eye, EyeOff, MapPin, Mail, Leaf } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
 
-// Componente principal de autenticación
 export default function AuthScreen() {
-  const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -32,28 +21,24 @@ export default function AuthScreen() {
   const [apellido, setApellido] = useState("")
   const [email, setEmail] = useState("")
   const [direccion, setDireccion] = useState("")
-  const [userType, setUserType] = useState("usuario") // 'usuario' o 'proveedor'
+  const [userType, setUserType] = useState<"usuario" | "proveedor">("usuario")
 
   // Función para manejar el inicio de sesión
   const handleLogin = async () => {
     if (!phoneNumber || !password) {
-      Alert.alert("Error", "Por favor ingresa tu número telefónico y contraseña")
+      alert("Por favor ingresa tu número telefónico y contraseña")
       return
     }
 
     setLoading(true)
     try {
-      // Aquí iría la lógica de autenticación con Firebase
-      // Para esta implementación, simulamos un login exitoso
-
-      // En una implementación real:
-      // const result = await signInWithPhoneNumber(auth, phoneNumber, password)
-
+      // Simulamos un login exitoso
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       setLoading(false)
-      router.replace("/home")
+      // Aquí iría la navegación al home
     } catch (error) {
       setLoading(false)
-      Alert.alert("Error", "No se pudo iniciar sesión. Verifica tus credenciales.")
+      alert("No se pudo iniciar sesión. Verifica tus credenciales.")
       console.error(error)
     }
   }
@@ -61,285 +46,206 @@ export default function AuthScreen() {
   // Función para manejar el registro
   const handleRegister = async () => {
     if (!nombre || !apellido || !phoneNumber || !password || !email) {
-      Alert.alert("Error", "Por favor completa todos los campos obligatorios")
+      alert("Por favor completa todos los campos obligatorios")
       return
     }
 
     setLoading(true)
     try {
-      // En una implementación real:
-      // const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      // await setDoc(doc(db, userType === 'usuario' ? 'usuarios' : 'proveedores', userCredential.user.uid), {
-      //   nombre,
-      //   apellido,
-      //   telefono: phoneNumber,
-      //   direccion,
-      //   fechaRegistro: new Date(),
-      //   fotoPerfil: null,
-      //   ...(userType === 'usuario' ? { historialServicios: [] } : {
-      //     categorias: [],
-      //     serviciosOfrecidos: [],
-      //     zonasCobertura: [],
-      //     disponibilidad: {},
-      //     calificacionPromedio: 0,
-      //     estado: 'pendiente'
-      //   })
-      // })
-
+      // Simulamos un registro exitoso
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       setLoading(false)
-      router.replace("/onboarding")
+      // Aquí iría la navegación al onboarding
     } catch (error) {
       setLoading(false)
-      Alert.alert("Error", "No se pudo completar el registro. Intenta nuevamente.")
+      alert("No se pudo completar el registro. Intenta nuevamente.")
       console.error(error)
     }
   }
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.logoContainer}>
-          <Image source={{ uri: "/placeholder.svg?height=120&width=120" }} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.appName}>Mañachyna Kusa</Text>
-          <Text style={styles.appSlogan}>Servicios domésticos a tu alcance</Text>
-        </View>
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-emerald-100 flex flex-col items-center justify-center p-4">
+      {/* Logo y nombre */}
+      <div className="text-center mb-8">
+        <div className="w-24 h-24 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <Leaf className="w-12 h-12 text-white" />
+        </div>
+        <h1 className="text-3xl font-bold text-emerald-700">Mañachyna Kusa</h1>
+        <p className="text-emerald-600 mt-1">Servicios domésticos a tu alcance</p>
+      </div>
 
-        <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>{isLogin ? "Iniciar Sesión" : "Crear Cuenta"}</Text>
-
+      {/* Formulario */}
+      <Card className="w-full max-w-md shadow-xl border-0">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-center text-2xl text-gray-800">
+            {isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           {!isLogin && (
             <>
-              <View style={styles.inputContainer}>
-                <UserIcon size={20} color="#555" style={styles.inputIcon} />
-                <TextInput style={styles.input} placeholder="Nombre" value={nombre} onChangeText={setNombre} />
-              </View>
+              {/* Nombre */}
+              <div className="space-y-2">
+                <Label htmlFor="nombre">Nombre</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Input
+                    id="nombre"
+                    placeholder="Tu nombre"
+                    value={nombre}
+                    onChange={(e) => setNombre(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
 
-              <View style={styles.inputContainer}>
-                <UserIcon size={20} color="#555" style={styles.inputIcon} />
-                <TextInput style={styles.input} placeholder="Apellido" value={apellido} onChangeText={setApellido} />
-              </View>
+              {/* Apellido */}
+              <div className="space-y-2">
+                <Label htmlFor="apellido">Apellido</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Input
+                    id="apellido"
+                    placeholder="Tu apellido"
+                    value={apellido}
+                    onChange={(e) => setApellido(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
 
-              <View style={styles.inputContainer}>
-                <UserIcon size={20} color="#555" style={styles.inputIcon} />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Correo electrónico"
-                  keyboardType="email-address"
-                  value={email}
-                  onChangeText={setEmail}
-                />
-              </View>
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email">Correo electrónico</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
 
-              <View style={styles.inputContainer}>
-                <UserIcon size={20} color="#555" style={styles.inputIcon} />
-                <TextInput style={styles.input} placeholder="Dirección" value={direccion} onChangeText={setDireccion} />
-              </View>
+              {/* Dirección */}
+              <div className="space-y-2">
+                <Label htmlFor="direccion">Dirección</Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Input
+                    id="direccion"
+                    placeholder="Tu dirección en Tena"
+                    value={direccion}
+                    onChange={(e) => setDireccion(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
 
-              <View style={styles.userTypeContainer}>
-                <Text style={styles.userTypeLabel}>Tipo de cuenta:</Text>
-                <View style={styles.userTypeOptions}>
-                  <TouchableOpacity
-                    style={[styles.userTypeButton, userType === "usuario" && styles.userTypeButtonActive]}
-                    onPress={() => setUserType("usuario")}
+              {/* Tipo de usuario */}
+              <div className="space-y-2">
+                <Label>Tipo de cuenta</Label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setUserType("usuario")}
+                    className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all ${
+                      userType === "usuario"
+                        ? "bg-emerald-600 border-emerald-600 text-white"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-emerald-300"
+                    }`}
                   >
-                    <Text style={[styles.userTypeText, userType === "usuario" && styles.userTypeTextActive]}>
-                      Usuario
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[styles.userTypeButton, userType === "proveedor" && styles.userTypeButtonActive]}
-                    onPress={() => setUserType("proveedor")}
+                    Usuario
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserType("proveedor")}
+                    className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all ${
+                      userType === "proveedor"
+                        ? "bg-emerald-600 border-emerald-600 text-white"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-emerald-300"
+                    }`}
                   >
-                    <Text style={[styles.userTypeText, userType === "proveedor" && styles.userTypeTextActive]}>
-                      Proveedor
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+                    Proveedor
+                  </button>
+                </div>
+              </div>
             </>
           )}
 
-          <View style={styles.inputContainer}>
-            <PhoneIcon size={20} color="#555" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Número telefónico"
-              keyboardType="phone-pad"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-            />
-          </View>
+          {/* Teléfono */}
+          <div className="space-y-2">
+            <Label htmlFor="phone">Número telefónico</Label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="0999999999"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
 
-          <View style={styles.inputContainer}>
-            <LockIcon size={20} color="#555" style={styles.inputIcon} />
-            <TextInput
-              style={styles.input}
-              placeholder="Contraseña"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity style={styles.eyeIcon} onPress={() => setShowPassword(!showPassword)}>
-              {showPassword ? <EyeOffIcon size={20} color="#555" /> : <EyeIcon size={20} color="#555" />}
-            </TouchableOpacity>
-          </View>
+          {/* Contraseña */}
+          <div className="space-y-2">
+            <Label htmlFor="password">Contraseña</Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Tu contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pl-10 pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
 
+          {/* Olvidé contraseña */}
           {isLogin && (
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
-            </TouchableOpacity>
+            <button type="button" className="text-sm text-emerald-600 hover:text-emerald-700 hover:underline">
+              ¿Olvidaste tu contraseña?
+            </button>
           )}
 
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={isLogin ? handleLogin : handleRegister}
+          {/* Botón principal */}
+          <Button
+            onClick={isLogin ? handleLogin : handleRegister}
             disabled={loading}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 text-lg font-semibold"
           >
-            <Text style={styles.primaryButtonText}>
-              {loading ? "Cargando..." : isLogin ? "Iniciar Sesión" : "Registrarse"}
-            </Text>
-          </TouchableOpacity>
+            {loading ? "Cargando..." : isLogin ? "Iniciar Sesión" : "Registrarse"}
+          </Button>
 
-          <TouchableOpacity style={styles.switchModeButton} onPress={() => setIsLogin(!isLogin)}>
-            <Text style={styles.switchModeText}>
-              {isLogin ? "¿No tienes una cuenta? Regístrate" : "¿Ya tienes una cuenta? Inicia sesión"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          {/* Cambiar modo */}
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="w-full text-center text-emerald-600 hover:text-emerald-700 hover:underline"
+          >
+            {isLogin ? "¿No tienes una cuenta? Regístrate" : "¿Ya tienes una cuenta? Inicia sesión"}
+          </button>
+        </CardContent>
+      </Card>
+
+      {/* Footer */}
+      <p className="mt-6 text-sm text-emerald-600/70 text-center">
+        Cantón Tena, Provincia de Napo
+      </p>
+    </div>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F5F5",
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    paddingBottom: 30,
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginTop: 60,
-    marginBottom: 30,
-  },
-  logo: {
-    width: 120,
-    height: 120,
-    marginBottom: 10,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#2E7D32", // Verde amazónico
-    marginBottom: 5,
-  },
-  appSlogan: {
-    fontSize: 16,
-    color: "#555",
-  },
-  formContainer: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 15,
-    padding: 20,
-    marginHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  formTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    marginBottom: 15,
-    paddingHorizontal: 10,
-    backgroundColor: "#F9F9F9",
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    height: 50,
-    fontSize: 16,
-    color: "#333",
-  },
-  eyeIcon: {
-    padding: 10,
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    color: "#2E7D32",
-    fontSize: 14,
-  },
-  primaryButton: {
-    backgroundColor: "#2E7D32", // Verde amazónico
-    borderRadius: 8,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  primaryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  switchModeButton: {
-    alignItems: "center",
-  },
-  switchModeText: {
-    color: "#2E7D32",
-    fontSize: 14,
-  },
-  userTypeContainer: {
-    marginBottom: 15,
-  },
-  userTypeLabel: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 8,
-  },
-  userTypeOptions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  userTypeButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 8,
-    padding: 12,
-    alignItems: "center",
-    marginHorizontal: 5,
-  },
-  userTypeButtonActive: {
-    backgroundColor: "#2E7D32",
-    borderColor: "#2E7D32",
-  },
-  userTypeText: {
-    color: "#555",
-    fontSize: 14,
-  },
-  userTypeTextActive: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-})
