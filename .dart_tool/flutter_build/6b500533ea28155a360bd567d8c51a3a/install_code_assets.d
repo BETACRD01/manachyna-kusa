@@ -1,1 +1,0 @@
- C:\\Users\\willi\\v0-app-manachyna-kusa\\.dart_tool\\flutter_build\\6b500533ea28155a360bd567d8c51a3a\\native_assets.json: 

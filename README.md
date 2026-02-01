@@ -1,30 +1,41 @@
-# App Mañachyna Kusa
+# Mañachyna Kusa 2.0 🚀
 
-*Automatically synced with your [v0.dev](https://v0.dev) deployments*
+Plataforma multiservicio para la provincia de Napo, Ecuador. Conecta usuarios con proveedores de servicios locales de forma eficiente y segura.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/williancerda0-gmailcoms-projects/v0-app-manachyna-kusa)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/TxoKQ622ZC4)
+## 🏗️ Estructura del Proyecto (Monorepo)
 
-## Overview
+Este repositorio está organizado como un monorepo para facilitar la escalabilidad:
+- **[App Móvil (Flutter)](./mobile_app):** Corazón de la plataforma para Android, iOS y Web.
+- **[Panel Administrativo (Next.js)](./admin_web):** Plataforma web moderna basada en React/Next.js.
 
-This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).
+## 🛠️ Tecnologías
 
-## Deployment
+- **Móvil:** [Flutter 3.x](https://flutter.dev)
+- **Web:** [Next.js 15](https://nextjs.org) + [Tailwind CSS](https://tailwindcss.com)
+- **Backend:** [Supabase](https://supabase.com) y [Firebase](https://firebase.google.com).
 
-Your project is live at:
+## 🚀 Cómo Ejecutar
 
-**[https://vercel.com/williancerda0-gmailcoms-projects/v0-app-manachyna-kusa](https://vercel.com/williancerda0-gmailcoms-projects/v0-app-manachyna-kusa)**
+### Aplicación Móvil (Flutter)
+```bash
+cd mobile_app
+flutter pub get
+flutter run
+```
 
-## Build your app
+### Página Web (Next.js)
+```bash
+cd admin_web
+npm install --legacy-peer-deps
+npm run dev
+```
 
-Continue building your app on:
+## 📂 Organización
 
-**[https://v0.dev/chat/projects/TxoKQ622ZC4](https://v0.dev/chat/projects/TxoKQ622ZC4)**
+- `mobile_app/`: Todo el código fuente de Flutter, incluyendo assets y configuraciones nativas.
+- `admin_web/`: Aplicación Next.js, componentes de UI web y hooks de React.
 
-## How It Works
-
-1. Create and modify your project using [v0.dev](https://v0.dev)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## ✅ Estado Actual
+- [x] Estructura Monorepo organizada.
+- [x] Configuración de Firebase/Supabase migrada.
+- [x] Linting y Tests verificados.
