@@ -1,17 +1,21 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Phone, User, Lock, Eye, EyeOff, MapPin, Mail, Leaf } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { createClient } from "@/lib/supabase/client"
 
 export default function AuthScreen() {
+  const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [userType, setUserType] = useState("cliente") // Declare the variable here
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
 
   // Estados para formulario de login
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -23,43 +27,78 @@ export default function AuthScreen() {
   const [email, setEmail] = useState("")
   const [direccion, setDireccion] = useState("")
 
-  // Función para manejar el inicio de sesión
+  // Función para manejar el inicio de sesión con Supabase
   const handleLogin = async () => {
-    if (!phoneNumber || !password) {
-      alert("Por favor ingresa tu número telefónico y contraseña")
+    if (!email || !password) {
+      setError("Por favor ingresa tu correo electrónico y contraseña")
       return
     }
 
     setLoading(true)
+    setError(null)
+    
     try {
-      // Simulamos un login exitoso
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const supabase = createClient()
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (authError) {
+        setError(authError.message)
+        setLoading(false)
+        return
+      }
+
+      // Redirigir al home después del login exitoso
+      router.push("/home")
+      router.refresh()
+    } catch (err) {
       setLoading(false)
-      // Aquí iría la navegación al home
-    } catch (error) {
-      setLoading(false)
-      alert("No se pudo iniciar sesión. Verifica tus credenciales.")
-      console.error(error)
+      setError("No se pudo iniciar sesión. Verifica tus credenciales.")
+      console.error(err)
     }
   }
 
-  // Función para manejar el registro
+  // Función para manejar el registro con Supabase
   const handleRegister = async () => {
-    if (!nombre || !apellido || !phoneNumber || !password || !email) {
-      alert("Por favor completa todos los campos obligatorios")
+    if (!nombre || !apellido || !password || !email) {
+      setError("Por favor completa todos los campos obligatorios")
       return
     }
 
     setLoading(true)
+    setError(null)
+    
     try {
-      // Simulamos un registro exitoso
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const supabase = createClient()
+      const { error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/home`,
+          data: {
+            nombre,
+            apellido,
+            telefono: phoneNumber,
+            direccion,
+            tipo_cuenta: "cliente",
+          },
+        },
+      })
+
+      if (authError) {
+        setError(authError.message)
+        setLoading(false)
+        return
+      }
+
+      setSuccess("Cuenta creada exitosamente. Por favor revisa tu correo para confirmar tu cuenta.")
       setLoading(false)
-      // Aquí iría la navegación al onboarding
-    } catch (error) {
+    } catch (err) {
       setLoading(false)
-      alert("No se pudo completar el registro. Intenta nuevamente.")
-      console.error(error)
+      setError("No se pudo completar el registro. Intenta nuevamente.")
+      console.error(err)
     }
   }
 
@@ -82,6 +121,19 @@ export default function AuthScreen() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Mensajes de error y éxito */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-sm">
+              {success}
+            </div>
+          )}
+
+          {/* Campos solo para registro */}
           {!isLogin && (
             <>
               {/* Nombre */}
@@ -113,18 +165,39 @@ export default function AuthScreen() {
                   />
                 </div>
               </div>
+            </>
+          )}
 
-              {/* Email */}
+          {/* Email - aparece en login y registro */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Correo electrónico</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+
+          {/* Campos adicionales solo para registro */}
+          {!isLogin && (
+            <>
+              {/* Teléfono */}
               <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+                <Label htmlFor="phone">Número telefónico</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="tu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="phone"
+                    type="tel"
+                    placeholder="0999999999"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -144,26 +217,8 @@ export default function AuthScreen() {
                   />
                 </div>
               </div>
-
-              
             </>
           )}
-
-          {/* Teléfono */}
-          <div className="space-y-2">
-            <Label htmlFor="phone">Número telefónico</Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="0999999999"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </div>
 
           {/* Contraseña */}
           <div className="space-y-2">
