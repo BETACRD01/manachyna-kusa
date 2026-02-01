@@ -33,41 +33,39 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBZ9kfThOPtGPYGhgNvD8n9fdNdERJ0AmM',
-    appId: '1:832653619760:web:5b955e3cc8ef62218133f5',
-    messagingSenderId: '832653619760',
-    projectId: 'manachynakusa',
-    authDomain: 'manachynakusa.firebaseapp.com',
-    storageBucket: 'manachynakusa.appspot.com',
+    apiKey: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_API_KEY'),
+    appId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_APP_ID'),
+    messagingSenderId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+    authDomain: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'),
+    storageBucket: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyD6plAIDdt112LxH7-nPYUjJfwByngedKw',
-    appId: '1:832653619760:android:2a593d3eab616f4f8133f5',
-    messagingSenderId: '832653619760',
-    projectId: 'manachynakusa',
-    storageBucket: 'manachynakusa.appspot.com',
+    apiKey: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_API_KEY'),
+    appId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_APP_ID'),
+    messagingSenderId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAtW5_sYtYNH4_wl4N9Q6inDmqCKjuADf4',
-    appId: '1:832653619760:ios:8f3bd7fe8a96670a8133f5',
-    messagingSenderId: '832653619760',
-    projectId: 'manachynakusa',
-    storageBucket: 'manachynakusa.appspot.com',
-    iosClientId:
-        '12345678901-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com',
+    apiKey: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_API_KEY'),
+    appId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_APP_ID'),
+    messagingSenderId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+    iosClientId: '12345678901-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com',
     iosBundleId: 'com.manachynakusa.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAtW5_sYtYNH4_wl4N9Q6inDmqCKjuADf4',
-    appId: '1:832653619760:ios:8f3bd7fe8a96670a8133f5',
-    messagingSenderId: '832653619760',
-    projectId: 'manachynakusa',
-    storageBucket: 'manachynakusa.appspot.com',
-    iosClientId:
-        '12345678901-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com',
+    apiKey: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_API_KEY'),
+    appId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_APP_ID'),
+    messagingSenderId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID'),
+    projectId: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_PROJECT_ID'),
+    storageBucket: String.fromEnvironment('NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET'),
+    iosClientId: '12345678901-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com',
     iosBundleId: 'com.manachynakusa.app',
   );
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/auth_service.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -51,7 +53,7 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       // Simulamos un login exitoso
       await Future.delayed(const Duration(seconds: 1));
-
+      
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/home');
     } catch (error) {
@@ -94,7 +96,7 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       // Simulamos un registro exitoso
       await Future.delayed(const Duration(seconds: 1));
-
+      
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/onboarding');
     } catch (error) {
@@ -235,8 +237,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                       });
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12),
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
                                       decoration: BoxDecoration(
                                         color: userType == 'usuario'
                                             ? const Color(0xFF2E7D32)
@@ -272,8 +273,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                       });
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 12),
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
                                       decoration: BoxDecoration(
                                         color: userType == 'proveedor'
                                             ? const Color(0xFF2E7D32)
@@ -321,9 +321,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         obscureText: !showPassword,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            showPassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
+                            showPassword ? Icons.visibility_off : Icons.visibility,
                             color: Colors.grey,
                           ),
                           onPressed: () {
@@ -362,8 +360,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          disabledBackgroundColor:
-                              const Color(0xFF2E7D32).withOpacity(0.5),
+                          disabledBackgroundColor: const Color(0xFF2E7D32).withOpacity(0.5),
                         ),
                         child: isLoading
                             ? const SizedBox(
