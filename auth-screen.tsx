@@ -11,6 +11,7 @@ export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [userType, setUserType] = useState("cliente") // Declare the variable here
 
   // Estados para formulario de login
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -21,7 +22,6 @@ export default function AuthScreen() {
   const [apellido, setApellido] = useState("")
   const [email, setEmail] = useState("")
   const [direccion, setDireccion] = useState("")
-  const [userType, setUserType] = useState<"usuario" | "proveedor">("usuario")
 
   // Función para manejar el inicio de sesión
   const handleLogin = async () => {
@@ -145,34 +145,7 @@ export default function AuthScreen() {
                 </div>
               </div>
 
-              {/* Tipo de usuario */}
-              <div className="space-y-2">
-                <Label>Tipo de cuenta</Label>
-                <div className="flex gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setUserType("usuario")}
-                    className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all ${
-                      userType === "usuario"
-                        ? "bg-emerald-600 border-emerald-600 text-white"
-                        : "bg-white border-gray-200 text-gray-700 hover:border-emerald-300"
-                    }`}
-                  >
-                    Usuario
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUserType("proveedor")}
-                    className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all ${
-                      userType === "proveedor"
-                        ? "bg-emerald-600 border-emerald-600 text-white"
-                        : "bg-white border-gray-200 text-gray-700 hover:border-emerald-300"
-                    }`}
-                  >
-                    Proveedor
-                  </button>
-                </div>
-              </div>
+              
             </>
           )}
 
