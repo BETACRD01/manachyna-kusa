@@ -128,4 +128,8 @@ CELERY_TIMEZONE = TIME_ZONE
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Firebase Admin SDK
-FIREBASE_CREDENTIALS_PATH = config('FIREBASE_CREDENTIALS_PATH', default=os.path.join(BASE_DIR, 'config', 'firebase', 'service-account.json'))
+FIREBASE_CONFIG_PATH = config('FIREBASE_CREDENTIALS_PATH', default='config/firebase/service-account.json')
+if not os.path.isabs(FIREBASE_CONFIG_PATH):
+    FIREBASE_CREDENTIALS_PATH = os.path.join(BASE_DIR, FIREBASE_CONFIG_PATH)
+else:
+    FIREBASE_CREDENTIALS_PATH = FIREBASE_CONFIG_PATH

@@ -115,7 +115,23 @@ if [ ! -z "$BE_URL" ]; then
     
     # Mobile ApiConfig
     # Inyecta la URL de Cloudflare en el defaultValue para que funcione sin configurar nada más.
-    python3 -c "import re, sys; p = 'mobile/lib/config/network/api_config.dart'; c = open(p).read(); c = re.sub(r\"String\.fromEnvironment\('DEV_API_URL'(, defaultValue: '[^']*')?\)\", f\"String.fromEnvironment('DEV_API_URL', defaultValue: '$BE_URL')\", c); open(p, 'w').write(c)"
+    echo -e "${BLUE}Injecting $BE_URL into mobile/lib/config/network/api_config.dart...${NC}"
+    python3 -c "
+import re, os
+path = 'mobile/lib/config/network/api_config.dart'
+if os.path.exists(path):
+    content = open(path).read()
+    pattern = r\"String\.fromEnvironment\('DEV_API_URL'(, defaultValue: '[^']*')?\)\"
+    replacement = f\"String.fromEnvironment('DEV_API_URL', defaultValue: '{os.environ.get('BE_URL')}')\"
+    new_content = re.sub(pattern, replacement, content)
+    if content != new_content:
+        open(path, 'w').write(new_content)
+        print('Successfully updated ApiConfig.dart')
+    else:
+        print('Warning: DEV_API_URL pattern not found in ApiConfig.dart')
+else:
+    print(f'Error: {path} not found')
+"
     
     echo -e "${BLUE}Syncing Flutter dependencies...${NC}"
     cd mobile && flutter pub get > /dev/null 2>&1 && cd ..
