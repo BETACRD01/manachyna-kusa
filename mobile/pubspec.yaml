@@ -1,0 +1,189 @@
+# ============================================================================
+# APLICACIÓN MULTISERVICIO PARA LA PROVINCIA DE NAPO, ECUADOR
+# ============================================================================
+# Nombre: Flutter Application Manachyna Kusa 2.0
+# Descripción: Plataforma marketplace que conecta usuarios con proveedores de
+#              servicios locales en la región amazónica ecuatoriana
+# Versión: 1.0.0+1
+# Tipo: Aplicación móvil privada (no publicada en tiendas)
+# ============================================================================
+
+name: flutter_application_manachyna_kusa_2_0
+description: Aplicación multiservicio para la provincia de Napo, Ecuador
+publish_to: 'none' # Aplicación privada - no se publica en tiendas públicas
+version: 1.0.0+1
+
+# ============================================================================
+# REQUISITOS DEL ENTORNO DE DESARROLLO
+# ============================================================================
+environment:
+  sdk: '>=2.19.0 <4.0.0' # Compatible con Flutter 3.x
+
+# ============================================================================
+# DEPENDENCIAS PRINCIPALES
+# ============================================================================
+dependencies:
+  # SDK Base de Flutter
+  flutter:
+    sdk: flutter
+  flutter_localizations: # Soporte para internacionalización
+    sdk: flutter
+  
+  # ========================================================================
+  # FIREBASE - Servicios Híbridos (Auth + Notificaciones)
+  # ========================================================================
+  firebase_core: ^3.10.1          # Núcleo de Firebase
+  firebase_auth: ^5.4.1           # Autenticación de Firebase
+  firebase_messaging: ^15.2.1     # Notificaciones Push (Cloud Messaging)
+  google_sign_in: ^6.2.2          # Autenticación con Google
+
+  # ========================================================================
+  # MAPAS Y GEOLOCALIZACIÓN - Para ubicar servicios y proveedores
+  # ========================================================================
+  google_maps_flutter: ^2.12.3    # Integración con Google Maps
+  location: ^8.0.1                # Obtención de ubicación del usuario
+  geolocator: ^14.0.2            # Servicios de geolocalización avanzados
+  
+  # ========================================================================
+  # GESTIÓN DE ESTADO - Arquitectura de la aplicación
+  # ========================================================================
+  provider: ^6.1.5                # Patrón de gestión de estado principal
+  flutter_riverpod: ^2.6.1        # Gestión de estado avanzada y reactiva
+  
+  # ========================================================================
+  # MULTIMEDIA Y MANEJO DE ARCHIVOS
+  # ========================================================================
+  cached_network_image: ^3.3.0    # Cache y optimización de imágenes de red
+  image_picker: ^1.1.2            # Selección de imágenes (cámara/galería)
+  file_picker: ^10.2.0            # Selección de archivos diversos
+  image: ^4.1.6                   # Procesamiento y manipulación de imágenes
+  record: ^6.0.0                  # Grabación de audio (para mensajes de voz)
+  audioplayers: ^6.5.0            # Reproducción de archivos de audio
+  
+  # ========================================================================
+  # INTERFAZ DE USUARIO Y COMPONENTES
+  # ========================================================================
+  flutter_rating_bar: ^4.0.1      # Componente de calificación (estrellas)
+  google_fonts: ^6.2.1            # Fuentes tipográficas de Google
+  fl_chart: ^1.0.0                # Gráficos y charts para estadísticas
+  lottie: ^3.3.1                  # Animaciones vectoriales Lottie
+  cupertino_icons: ^1.0.2         # Iconos de iOS para consistencia visual
+  
+  # ========================================================================
+  # NAVEGACIÓN Y UTILIDADES DEL SISTEMA
+  # ========================================================================
+  go_router: ^16.0.0              # Sistema de navegación y rutas moderno
+  url_launcher: ^6.3.1            # Apertura de URLs externas y deep links
+  shared_preferences: ^2.2.2      # Almacenamiento local de configuraciones
+  path_provider: ^2.1.5           # Acceso a directorios del sistema
+  
+  # ========================================================================
+  # PERMISOS Y NOTIFICACIONES
+  # ========================================================================
+  permission_handler: ^12.0.0+1   # Gestión de permisos del sistema
+  flutter_local_notifications: ^19.3.1 # Notificaciones locales
+  
+  # ========================================================================
+  # UTILIDADES GENERALES
+  # ========================================================================
+  intl: ^0.20.2                   # Internacionalización (fechas, números, moneda)
+  device_info_plus: ^11.5.0       # Información del dispositivo
+  uuid: ^4.5.1                    # Generación de identificadores únicos
+  logger: ^2.6.0                  # Sistema de logging para debugging
+  http: ^1.4.0                    # Cliente HTTP para APIs externas
+  crypto: ^3.0.6                  # Funciones criptográficas
+  share_plus: ^7.2.2              # Compartir contenido con otras apps
+  logging: ^1.1.0                 # Sistema de logging adicional
+  foundation: ^0.0.5              # Utilidades base
+  connectivity_plus: ^6.1.4
+
+# ============================================================================
+# DEPENDENCIAS DE DESARROLLO
+# ============================================================================
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0           # Reglas de linting para código limpio
+  mockito: ^5.4.4                 # Framework de mocking para tests
+  build_runner: ^2.4.9            # Generador de código (necesario para mocks)
+  
+  # ========================================================================
+  # CONFIGURACIÓN DE ICONOS DE LA APLICACIÓN
+  # ========================================================================
+  flutter_launcher_icons: ^0.14.4
+  
+# Configuración específica para iconos
+flutter_launcher_icons:
+  android: true                    # Generar iconos para Android
+  ios: true                       # Generar iconos para iOS
+  image_path: "assets/images/logo.png" # Ruta del logo principal
+  min_sdk_android: 21             # Android 5.0 como mínimo
+
+# ============================================================================
+# CONFIGURACIÓN DE ASSETS Y RECURSOS
+# ============================================================================
+flutter:
+  uses-material-design: true      # Usar Material Design
+  
+  # ========================================================================
+  # ASSETS ORGANIZADOS POR CATEGORÍAS
+  # ========================================================================
+  assets:
+    # Logo principal de la aplicación
+    - assets/images/logo.png
+    - assets/images/google_logo.png
+    
+    # ======================================================================
+    # ICONOS DE SERVICIOS DOMÉSTICOS
+    # ======================================================================
+    - assets/icons/casa-limpia.png           # Servicio de limpieza del hogar
+    - assets/icons/plomero.png               # Servicios de plomería
+    - assets/icons/electricista.png          # Servicios eléctricos
+    - assets/icons/caja-de-herramientas.png  # Mantenimiento general
+    - assets/icons/cubo-de-pintura.png       # Servicios de pintura
+    
+    # ======================================================================
+    # ICONOS DE SERVICIOS PROFESIONALES
+    # ======================================================================
+    - assets/icons/agronomia.png             # Servicios agronómicos
+    - assets/icons/gastos-generales.png      # Gestión de gastos
+    - assets/icons/publicidad-digital.png    # Marketing digital
+    - assets/icons/analista-de-la-red.png    # Servicios de redes/IT
+    - assets/icons/controlar.png             # Supervisión y control
+    
+    # ======================================================================
+    # ICONOS DE MÉTODOS DE PAGO
+    # ======================================================================
+    - assets/icons/payments/dinero.png              # Pago en efectivo
+    - assets/icons/payments/tarjeta-de-credito.png  # Tarjeta de crédito
+    - assets/icons/payments/transferencia.png       # Transferencia bancaria
+    - assets/icons/payments/banca-en-linea.png      # Banca en línea
+
+# ============================================================================
+# CASOS DE USO PRINCIPALES DE LA APLICACIÓN
+# ============================================================================
+# 1. SOLICITUD DE SERVICIOS
+#    - Los usuarios pueden buscar y solicitar servicios domésticos y profesionales
+#    - Sistema de categorización por tipo de servicio
+#    - Geolocalización para encontrar proveedores cercanos
+#
+# 2. GESTIÓN DE PROVEEDORES
+#    - Registro y perfil de proveedores de servicios
+#    - Sistema de calificaciones y reseñas
+#    - Gestión de disponibilidad y precios
+#
+# 3. COMUNICACIÓN
+#    - Chat en tiempo real entre usuarios y proveedores
+#    - Notificaciones push para actualizaciones
+#    - Mensajes de voz y multimedia
+#
+# 4. SISTEMA DE PAGOS
+#    - Múltiples métodos de pago disponibles
+#    - Procesamiento seguro de transacciones
+#    - Historial de pagos y facturas
+#
+# 5. GEOLOCALIZACIÓN Y MAPAS
+#    - Visualización de servicios en mapa
+#    - Cálculo de rutas y distancias
+#    - Seguimiento de servicios en tiempo real
+# ============================================================================
