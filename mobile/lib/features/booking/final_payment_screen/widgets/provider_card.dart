@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
+import '../../../../data/models/user_model.dart';
+
 class ProviderCard extends StatelessWidget {
-  final Map<String, dynamic> selectedProvider;
+  final UserModel? selectedProvider;
 
   const ProviderCard({
     super.key,
@@ -11,20 +13,15 @@ class ProviderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final providerData = selectedProvider['providerData'] ?? {};
-    
-    final String providerName = selectedProvider['providerName'] ?? 
-                                providerData['name'] ?? 'Proveedor Desconocido';
-    
-    final double providerRating = (selectedProvider['providerRating'] as num?)?.toDouble() ?? 
-                                  (providerData['rating'] as num?)?.toDouble() ?? 0.0;
-    
-    final int providerJobs = selectedProvider['providerJobs'] ?? 
-                            providerData['pendingJobs'] ?? 0;
-    
-    final String responseTime = selectedProvider['responseTime'] ?? '2 horas';
-    final String location = selectedProvider['location'] ?? 
-                           providerData['city'] ?? 'Tena';
+    final String providerName =
+        selectedProvider?.name ?? 'Proveedor Desconocido';
+
+    final double providerRating = selectedProvider?.rating ?? 0.0;
+
+    final int providerJobs = selectedProvider?.completedJobs ?? 0;
+
+    const String responseTime = '2 horas';
+    final String location = selectedProvider?.address ?? 'Tena';
 
     return Container(
       decoration: BoxDecoration(
@@ -84,7 +81,9 @@ class ProviderCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      providerName.isNotEmpty ? providerName[0].toUpperCase() : 'P',
+                      providerName.isNotEmpty
+                          ? providerName[0].toUpperCase()
+                          : 'P',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -110,7 +109,8 @@ class ProviderCard extends StatelessWidget {
                       Row(
                         children: [
                           if (providerRating > 0) ...[
-                            const Icon(Icons.star, size: 14, color: Colors.amber),
+                            const Icon(Icons.star,
+                                size: 14, color: Colors.amber),
                             const SizedBox(width: 4),
                             Text(
                               providerRating.toStringAsFixed(1),

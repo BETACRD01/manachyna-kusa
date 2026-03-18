@@ -12,7 +12,6 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
   String _searchQuery = '';
   List<Map<String, dynamic>> _providers = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -22,11 +21,7 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
   Future<void> _loadProviders() async {
     try {
       setState(() => _isLoading = true);
-      
-      // TODO: Reemplazar con datos reales de Firestore
-      // final providers = await _firestoreService.getProviders();
       await Future.delayed(const Duration(seconds: 1));
-      
       if (mounted) {
         setState(() {
           _providers = _generateMockProviders();
@@ -42,28 +37,35 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
   }
 
   List<Map<String, dynamic>> _generateMockProviders() {
-    return List.generate(8, (index) => {
-      'id': 'provider_$index',
-      'name': 'Proveedor ${index + 1}',
-      'email': 'proveedor${index + 1}@email.com',
-      'phone': '+593 9${(8000000 + index).toString()}',
-      'joinDate': DateTime.now().subtract(Duration(days: index * 8)),
-      'isActive': index % 2 == 0,
-      'rating': 4.0 + (index % 5) * 0.2,
-      'totalServices': (index * 3) + 5,
-      'totalEarnings': (index * 234.67) + 567.89,
-      'isApproved': index % 3 != 0, // Algunos pendientes de aprobación
-      'services': ['Limpieza', 'Jardinería', 'Plomería'][index % 3],
-      'avatar': null,
-    });
+    return List.generate(
+        8,
+        (index) => {
+              'id': 'provider_$index',
+              'name': 'Proveedor ${index + 1}',
+              'email': 'proveedor${index + 1}@email.com',
+              'phone': '+593 9${(8000000 + index).toString()}',
+              'joinDate': DateTime.now().subtract(Duration(days: index * 8)),
+              'isActive': index % 2 == 0,
+              'rating': 4.0 + (index % 5) * 0.2,
+              'totalServices': (index * 3) + 5,
+              'totalEarnings': (index * 234.67) + 567.89,
+              'isApproved': index % 3 != 0, // Algunos pendientes de aprobación
+              'services': ['Limpieza', 'Jardinería', 'Plomería'][index % 3],
+              'avatar': null,
+            });
   }
 
   List<Map<String, dynamic>> _getFilteredProviders() {
     if (_searchQuery.isEmpty) return _providers;
-    return _providers.where((provider) =>
-        provider['name'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
-        provider['email'].toLowerCase().contains(_searchQuery.toLowerCase())
-    ).toList();
+    return _providers
+        .where((provider) =>
+            provider['name']
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()) ||
+            provider['email']
+                .toLowerCase()
+                .contains(_searchQuery.toLowerCase()))
+        .toList();
   }
 
   void _showErrorSnackBar(String message) {
@@ -159,7 +161,7 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
       label: Text(label),
       selected: isSelected,
       onSelected: (selected) {
-        // TODO: Implementar filtros
+        //
       },
       selectedColor: Colors.green.shade100,
       checkmarkColor: Colors.green.shade700,
@@ -168,7 +170,7 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
 
   Widget _buildProvidersList() {
     final filteredProviders = _getFilteredProviders();
-    
+
     if (filteredProviders.isEmpty) {
       return Center(
         child: Column(
@@ -181,7 +183,7 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              _searchQuery.isEmpty 
+              _searchQuery.isEmpty
                   ? 'No hay proveedores registrados'
                   : 'No se encontraron proveedores',
               style: TextStyle(
@@ -245,7 +247,8 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
                 Text(
                   provider['isApproved'] ? 'Aprobado' : 'Pendiente',
                   style: TextStyle(
-                    color: provider['isApproved'] ? Colors.green : Colors.orange,
+                    color:
+                        provider['isApproved'] ? Colors.green : Colors.orange,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -344,11 +347,16 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
               _buildDetailRow('Email:', provider['email']),
               _buildDetailRow('Teléfono:', provider['phone']),
               _buildDetailRow('Servicios:', provider['services']),
-              _buildDetailRow('Estado:', provider['isApproved'] ? 'Aprobado' : 'Pendiente'),
-              _buildDetailRow('Calificación:', '${provider['rating'].toStringAsFixed(1)}'),
-              _buildDetailRow('Total servicios:', '${provider['totalServices']}'),
-              _buildDetailRow('Total ganado:', '\$${provider['totalEarnings'].toStringAsFixed(2)}'),
-              _buildDetailRow('Fecha registro:', _formatDate(provider['joinDate'])),
+              _buildDetailRow(
+                  'Estado:', provider['isApproved'] ? 'Aprobado' : 'Pendiente'),
+              _buildDetailRow(
+                  'Calificación:', '${provider['rating'].toStringAsFixed(1)}'),
+              _buildDetailRow(
+                  'Total servicios:', '${provider['totalServices']}'),
+              _buildDetailRow('Total ganado:',
+                  '\$${provider['totalEarnings'].toStringAsFixed(2)}'),
+              _buildDetailRow(
+                  'Fecha registro:', _formatDate(provider['joinDate'])),
             ],
           ),
         ),
@@ -383,13 +391,9 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
 
   Future<void> _approveProvider(Map<String, dynamic> provider) async {
     try {
-      // TODO: Actualizar en Firestore
-      // await _firestoreService.approveProvider(provider['id']);
-      
       setState(() {
         provider['isApproved'] = true;
       });
-
       _showSuccessSnackBar('${provider['name']} ha sido aprobado');
     } catch (e) {
       _showErrorSnackBar('Error al aprobar proveedor: $e');
@@ -398,9 +402,6 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
 
   Future<void> _toggleProviderStatus(Map<String, dynamic> provider) async {
     try {
-      // TODO: Actualizar en Firestore
-      // await _firestoreService.updateProviderStatus(provider['id'], !provider['isActive']);
-      
       setState(() {
         provider['isActive'] = !provider['isActive'];
       });
@@ -430,7 +431,8 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
           ElevatedButton(
             onPressed: () => _deleteProvider(provider),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
+            child:
+                const Text('Eliminar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -440,10 +442,6 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
   Future<void> _deleteProvider(Map<String, dynamic> provider) async {
     try {
       Navigator.pop(context); // Cerrar diálogo
-      
-      // TODO: Eliminar de Firestore
-      // await _firestoreService.deleteProvider(provider['id']);
-      
       setState(() {
         _providers.removeWhere((p) => p['id'] == provider['id']);
       });

@@ -1,3 +1,7 @@
+import '../../data/models/service_model.dart';
+import '../../data/models/booking_model.dart';
+import '../../data/models/user_model.dart';
+
 // ============================================================================
 // CLASES DE ARGUMENTOS PARA NAVEGACIÓN
 // ============================================================================
@@ -24,7 +28,7 @@ class ServiceOptionsArguments {
 
 /// Argumentos para ProviderSelectionScreen (PASO 2/4) - EXISTENTE
 class ProviderSelectionArguments {
-  final Map<String, dynamic> bookingData;
+  final BookingModel bookingData;
 
   const ProviderSelectionArguments({
     required this.bookingData,
@@ -32,18 +36,18 @@ class ProviderSelectionArguments {
 
   @override
   String toString() {
-    return 'ProviderSelectionArguments(bookingData keys: ${bookingData.keys.toList()})';
+    return 'ProviderSelectionArguments(bookingData id: ${bookingData.id})';
   }
 }
 
 /// Argumentos para PaymentSummaryScreen (PASO 3/4) - EXISTENTE
 class PaymentSummaryArguments {
-  final Map<String, dynamic> serviceData;
+  final ServiceModel serviceData;
   final List<Map<String, dynamic>> selectedOptions;
   final bool isHeavyWork;
   final double heavyWorkSurcharge;
-  final Map<String, dynamic>? selectedProvider;
-  final Map<String, dynamic>? bookingData;
+  final UserModel? selectedProvider;
+  final BookingModel? bookingData;
 
   const PaymentSummaryArguments({
     required this.serviceData,
@@ -56,13 +60,13 @@ class PaymentSummaryArguments {
 
   @override
   String toString() {
-    return 'PaymentSummaryArguments(serviceData: ${serviceData['serviceName']}, selectedOptions: ${selectedOptions.length}, provider: ${selectedProvider?['name']})';
+    return 'PaymentSummaryArguments(serviceData: ${serviceData.title}, selectedOptions: ${selectedOptions.length}, provider: ${selectedProvider?.name})';
   }
 }
 
 /// Argumentos para FinalPaymentScreen (PASO 4/4) - EXISTENTE
 class FinalPaymentArguments {
-  final Map<String, dynamic> finalBookingData;
+  final BookingModel finalBookingData;
 
   const FinalPaymentArguments({
     required this.finalBookingData,
@@ -70,7 +74,7 @@ class FinalPaymentArguments {
 
   @override
   String toString() {
-    return 'FinalPaymentArguments(finalBookingData keys: ${finalBookingData.keys.toList()})';
+    return 'FinalPaymentArguments(finalBookingData id: ${finalBookingData.id})';
   }
 }
 
@@ -81,7 +85,7 @@ class FinalPaymentArguments {
 /// Argumentos para ServiceDetailsScreen - NUEVO
 class ServiceDetailsArguments {
   final String serviceId;
-  final Map<String, dynamic>? serviceData;
+  final ServiceModel? serviceData;
 
   const ServiceDetailsArguments({
     required this.serviceId,
@@ -97,8 +101,8 @@ class ServiceDetailsArguments {
 /// Argumentos para BookingScreen - NUEVO
 class BookingArguments {
   final String serviceId;
-  final Map<String, dynamic> serviceData;
-  final Map<String, dynamic>? providerData;
+  final ServiceModel serviceData;
+  final UserModel? providerData;
 
   const BookingArguments({
     required this.serviceId,
@@ -108,7 +112,7 @@ class BookingArguments {
 
   @override
   String toString() {
-    return 'BookingArguments(serviceId: $serviceId, serviceTitle: ${serviceData['title']}, hasProviderData: ${providerData != null})';
+    return 'BookingArguments(serviceId: $serviceId, serviceTitle: ${serviceData.title}, hasProviderData: ${providerData != null})';
   }
 }
 
@@ -119,8 +123,7 @@ class BookingArguments {
 /// Argumentos para ChatScreen
 class ChatScreenArguments {
   final String? chatId;
-  final String
-      requiredOtherUserName; // otherUserName is required in constructor
+  final String requiredOtherUserName; 
   final String? otherUserId;
   final String? bookingId;
 

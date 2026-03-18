@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
+import '../../../../data/models/booking_model.dart';
+
 class PriceBreakdownCard extends StatelessWidget {
-  final Map<String, dynamic> finalBookingData;
+  final BookingModel finalBookingData;
 
   const PriceBreakdownCard({
     super.key,
@@ -11,14 +13,15 @@ class PriceBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final serviceBasePrice = finalBookingData['serviceData']?['basePrice']?.toDouble() ?? 0.0;
-    final selectedOptions = finalBookingData['selectedOptions'] as List<dynamic>? ?? [];
-    final optionsTotal = selectedOptions.fold(0.0, (total, option) => total + (option['price']?.toDouble() ?? 0.0));
-    final isHeavyWork = finalBookingData['isHeavyWork'] ?? false;
-    final heavyWorkSurcharge = finalBookingData['heavyWorkSurcharge']?.toDouble() ?? 0.0;
-    final processingFee = finalBookingData['processingFee']?.toDouble() ?? 0.0;
-    final subtotalServices = finalBookingData['totalPrice']?.toDouble() ?? 0.0;
-    final finalTotal = finalBookingData['finalTotal']?.toDouble() ?? 0.0;
+    final serviceBasePrice = finalBookingData.serviceData?.basePrice ?? 0.0;
+    final selectedOptions = finalBookingData.selectedOptions;
+    final optionsTotal = selectedOptions.fold(
+        0.0, (total, option) => total + (option['price']?.toDouble() ?? 0.0));
+    final isHeavyWork = finalBookingData.isHeavyWork;
+    final heavyWorkSurcharge = finalBookingData.heavyWorkSurcharge;
+    final processingFee = 0.0; //
+    final subtotalServices = finalBookingData.totalPrice;
+    final finalTotal = finalBookingData.totalPrice + processingFee;
 
     return Container(
       decoration: BoxDecoration(

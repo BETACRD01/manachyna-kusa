@@ -11,7 +11,6 @@ import 'providers/chat_provider.dart';
 // Configuración y Rutas
 import 'config/app_routes.dart';
 import 'core/themes/app_theme.dart';
-import 'config/routes/route_generator.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

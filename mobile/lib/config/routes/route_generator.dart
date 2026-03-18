@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app_routes.dart';
-
+import '../../core/utils/app_logger.dart';
 // IMPORTACIONES DE PANTALLAS PRINCIPALES
 import '../../features/splash_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
@@ -35,9 +35,10 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final String routeName = settings.name ?? AppRoutes.splash;
 
-    debugPrint('Navegando a: $routeName');
-    debugPrint('Argumentos: ${settings.arguments}');
-    debugPrint('Tipo de argumentos: ${settings.arguments.runtimeType}');
+    AppLogger.i('Navegando a: $routeName', {
+      'arguments': settings.arguments?.toString(),
+      'type': settings.arguments.runtimeType.toString(),
+    });
 
     switch (routeName) {
       // PANTALLAS PRINCIPALES
@@ -97,121 +98,56 @@ class RouteGenerator {
 
       // FLUJO DE RESERVAS (4 PASOS) - SISTEMA EXISTENTE
       case AppRoutes.serviceOptions:
-        return MaterialPageRoute(
-          builder: (context) => ServiceOptionsScreen(
-            arguments: settings.arguments as ServiceOptionsArguments?,
-          ),
-          settings: settings,
+        return _buildRoute<ServiceOptionsArguments>(
+          settings,
+          (args) => ServiceOptionsScreen(arguments: args),
+          const ClientHomeScreen(),
         );
 
       case AppRoutes.providerSelection:
-        return MaterialPageRoute(
-          builder: (context) => ProviderSelectionScreen(
-            arguments: settings.arguments as ProviderSelectionArguments?,
-          ),
-          settings: settings,
+        return _buildRoute<ProviderSelectionArguments>(
+          settings,
+          (args) => ProviderSelectionScreen(arguments: args),
+          const ClientHomeScreen(),
         );
 
       case AppRoutes.paymentSummary:
-        return MaterialPageRoute(
-          builder: (context) => PaymentSummaryScreen(
-            arguments: settings.arguments as PaymentSummaryArguments?,
-          ),
-          settings: settings,
+        return _buildRoute<PaymentSummaryArguments>(
+          settings,
+          (args) => PaymentSummaryScreen(arguments: args),
+          const ClientHomeScreen(),
         );
 
       case AppRoutes.finalPayment:
-        return MaterialPageRoute(
-          builder: (context) => FinalPaymentScreen(
-            arguments: settings.arguments as FinalPaymentArguments?,
-          ),
-          settings: settings,
+        return _buildRoute<FinalPaymentArguments>(
+          settings,
+          (args) => FinalPaymentScreen(arguments: args),
+          const ClientHomeScreen(),
         );
 
-      // FLUJO DE CITAS DIRECTAS (NUEVO) - MANEJO MEJORADO
+      // FLUJO DE CITAS DIRECTAS (NUEVO) - MANEJO MEJORADO CON TIPADO FUERTE
       case AppRoutes.serviceDetails:
-        final args = settings.arguments;
-        debugPrint('Procesando argumentos para service-details: $args');
-        debugPrint('Tipo de argumentos: ${args.runtimeType}');
-
-        // Caso 1: ServiceDetailsArguments (ideal)
-        if (args is ServiceDetailsArguments) {
-          debugPrint('Argumentos tipo ServiceDetailsArguments');
-          return MaterialPageRoute(
-            builder: (context) => ServiceDetailsScreen(
-              serviceId: args.serviceId,
-              serviceData: args.serviceData,
-            ),
-            settings: settings,
-          );
-        }
-
-        // Caso 2: Map<String, dynamic> (fallback) - SIN TRY-CATCH
-        if (args is Map<String, dynamic>) {
-          debugPrint('Argumentos tipo Map, convirtiendo...');
-          final serviceId = args['serviceId']?.toString() ?? '';
-          final serviceData = args['serviceData'] as Map<String, dynamic>?;
-
-          debugPrint('ServiceId extraído: $serviceId');
-          debugPrint(
-              'ServiceData extraído: ${serviceData != null ? 'Sí' : 'No'}');
-
-          if (serviceId.isNotEmpty) {
-            return MaterialPageRoute(
-              builder: (context) => ServiceDetailsScreen(
-                serviceId: serviceId,
-                serviceData: serviceData,
-              ),
-              settings: settings,
-            );
-          } else {
-            debugPrint('ServiceId vacío en argumentos Map');
-          }
-        }
-
-        // Caso 3: Argumentos inválidos o nulos
-        debugPrint('Argumentos inválidos para service-details: $args');
-        return MaterialPageRoute(
-          builder: (context) => const ClientHomeScreen(),
-          settings: settings,
+        return _buildRoute<ServiceDetailsArguments>(
+          settings,
+          (args) => ServiceDetailsScreen(
+            serviceId: args!.serviceId,
+            serviceData: args.serviceData,
+          ),
+          const ClientHomeScreen(),
+          allowNullArgs: false,
         );
 
       case AppRoutes.booking:
-        try {
-          final args = settings.arguments;
-
-          if (args is BookingArguments) {
-            return MaterialPageRoute(
-              builder: (context) => BookingScreen(
-                serviceId: args.serviceId,
-                serviceData: args.serviceData,
-                providerData: args.providerData,
-              ),
-              settings: settings,
-            );
-          } else if (args is Map<String, dynamic>) {
-            return MaterialPageRoute(
-              builder: (context) => BookingScreen(
-                serviceId: args['serviceId']?.toString() ?? '',
-                serviceData: args['serviceData'] as Map<String, dynamic>? ?? {},
-                providerData: args['providerData'] as Map<String, dynamic>?,
-              ),
-              settings: settings,
-            );
-          }
-
-          debugPrint('Argumentos inválidos para booking: $args');
-          return MaterialPageRoute(
-            builder: (context) => const ClientHomeScreen(),
-            settings: settings,
-          );
-        } catch (e) {
-          debugPrint('Error al procesar argumentos booking: $e');
-          return MaterialPageRoute(
-            builder: (context) => const ClientHomeScreen(),
-            settings: settings,
-          );
-        }
+        return _buildRoute<BookingArguments>(
+          settings,
+          (args) => BookingScreen(
+            serviceId: args!.serviceId,
+            serviceData: args.serviceData,
+            providerData: args.providerData,
+          ),
+          const ClientHomeScreen(),
+          allowNullArgs: false,
+        );
 
       // PANTALLAS DE CHAT
       case AppRoutes.chatList:
@@ -221,23 +157,16 @@ class RouteGenerator {
         );
 
       case AppRoutes.chatScreen:
-        final args = settings.arguments as ChatScreenArguments?;
-        if (args != null) {
-          return MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              chatId: args.chatId,
-              otherUserName: args.requiredOtherUserName,
-              otherUserId: args.otherUserId,
-              bookingId: args.bookingId,
-            ),
-            settings: settings,
-          );
-        }
-        // Fallback or Error if arguments are missing
-        debugPrint('Argumentos faltantes para ChatScreen');
-        return MaterialPageRoute(
-          builder: (context) => const ChatListScreen(),
-          settings: settings,
+        return _buildRoute<ChatScreenArguments>(
+          settings,
+          (args) => ChatScreen(
+            chatId: args?.chatId,
+            otherUserName: args!.requiredOtherUserName,
+            otherUserId: args.otherUserId,
+            bookingId: args.bookingId,
+          ),
+          const ChatListScreen(),
+          allowNullArgs: false,
         );
 
       // 👨‍💼 PANTALLAS DE PROVEEDOR
@@ -262,11 +191,43 @@ class RouteGenerator {
 
       // RUTA POR DEFECTO
       default:
-        debugPrint('Ruta no encontrada: $routeName, redirigiendo a home');
+        AppLogger.w('Ruta no encontrada: $routeName, redirigiendo a home');
         return MaterialPageRoute(
           builder: (context) => const ClientHomeScreen(),
           settings: settings,
         );
     }
+  }
+
+  /// Helper genérico para contruir rutas de forma segura en tipos
+  static Route<dynamic> _buildRoute<T>(
+    RouteSettings settings,
+    Widget Function(T? args) builder,
+    Widget fallback, {
+    bool allowNullArgs = true,
+  }) {
+    final args = settings.arguments;
+
+    if (args is T) {
+      return MaterialPageRoute(
+        builder: (context) => builder(args),
+        settings: settings,
+      );
+    } else if (allowNullArgs && args == null) {
+      return MaterialPageRoute(
+        builder: (context) => builder(null),
+        settings: settings,
+      );
+    }
+
+    AppLogger.e(
+      'Argumentos inválidos para la ruta ${settings.name}',
+      {'expected': T.toString(), 'received': args.runtimeType.toString()},
+    );
+
+    return MaterialPageRoute(
+      builder: (context) => fallback,
+      settings: settings,
+    );
   }
 }

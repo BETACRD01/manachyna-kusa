@@ -1,10 +1,7 @@
-// ============================================================================
-// CORE: CALCULADORA DE PRECIOS
-// features/booking/utils/payment_calculator.dart
-// ============================================================================
+import '../../../../data/models/service_model.dart';
 
 class PaymentCalculator {
-  final Map<String, dynamic> serviceData;
+  final ServiceModel serviceData;
   final List<Map<String, dynamic>> selectedOptions;
   final bool isHeavyWork;
   final double heavyWorkSurcharge;
@@ -23,7 +20,7 @@ class PaymentCalculator {
   // ======================== GETTERS PRINCIPALES ========================
   
   /// Precio base del servicio seleccionado
-  double get basePrice => serviceData['basePrice']?.toDouble() ?? 0.0;
+  double get basePrice => serviceData.basePrice;
   
   /// Suma total de opciones adicionales seleccionadas
   double get optionsTotal {

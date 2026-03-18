@@ -12,8 +12,6 @@ class _UsersScreenState extends State<UsersScreen> {
   String _searchQuery = '';
   List<Map<String, dynamic>> _users = [];
 
-  
-
   @override
   void initState() {
     super.initState();
@@ -23,11 +21,9 @@ class _UsersScreenState extends State<UsersScreen> {
   Future<void> _loadUsers() async {
     try {
       setState(() => _isLoading = true);
-      
-      // TODO: Reemplazar con datos reales de Firestore
-      // final users = await _firestoreService.getUsers();
+
       await Future.delayed(const Duration(seconds: 1));
-      
+
       if (mounted) {
         setState(() {
           _users = _generateMockUsers();
@@ -43,25 +39,28 @@ class _UsersScreenState extends State<UsersScreen> {
   }
 
   List<Map<String, dynamic>> _generateMockUsers() {
-    return List.generate(10, (index) => {
-      'id': 'user_$index',
-      'name': 'Usuario ${index + 1}',
-      'email': 'usuario${index + 1}@email.com',
-      'phone': '+593 9${(9000000 + index).toString()}',
-      'joinDate': DateTime.now().subtract(Duration(days: index * 5)),
-      'isActive': index % 2 == 0,
-      'totalBookings': (index * 2) + 1,
-      'totalSpent': (index * 45.67) + 123.45,
-      'avatar': null,
-    });
+    return List.generate(
+        10,
+        (index) => {
+              'id': 'user_$index',
+              'name': 'Usuario ${index + 1}',
+              'email': 'usuario${index + 1}@email.com',
+              'phone': '+593 9${(9000000 + index).toString()}',
+              'joinDate': DateTime.now().subtract(Duration(days: index * 5)),
+              'isActive': index % 2 == 0,
+              'totalBookings': (index * 2) + 1,
+              'totalSpent': (index * 45.67) + 123.45,
+              'avatar': null,
+            });
   }
 
   List<Map<String, dynamic>> _getFilteredUsers() {
     if (_searchQuery.isEmpty) return _users;
-    return _users.where((user) =>
-        user['name'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
-        user['email'].toLowerCase().contains(_searchQuery.toLowerCase())
-    ).toList();
+    return _users
+        .where((user) =>
+            user['name'].toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            user['email'].toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
   }
 
   void _showErrorSnackBar(String message) {
@@ -138,7 +137,7 @@ class _UsersScreenState extends State<UsersScreen> {
 
   Widget _buildUsersList() {
     final filteredUsers = _getFilteredUsers();
-    
+
     if (filteredUsers.isEmpty) {
       return Center(
         child: Column(
@@ -151,7 +150,7 @@ class _UsersScreenState extends State<UsersScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              _searchQuery.isEmpty 
+              _searchQuery.isEmpty
                   ? 'No hay usuarios registrados'
                   : 'No se encontraron usuarios',
               style: TextStyle(
@@ -296,9 +295,11 @@ class _UsersScreenState extends State<UsersScreen> {
           children: [
             _buildDetailRow('Email:', user['email']),
             _buildDetailRow('Teléfono:', user['phone']),
-            _buildDetailRow('Estado:', user['isActive'] ? 'Activo' : 'Inactivo'),
+            _buildDetailRow(
+                'Estado:', user['isActive'] ? 'Activo' : 'Inactivo'),
             _buildDetailRow('Total reservas:', '${user['totalBookings']}'),
-            _buildDetailRow('Total gastado:', '\$${user['totalSpent'].toStringAsFixed(2)}'),
+            _buildDetailRow(
+                'Total gastado:', '\$${user['totalSpent'].toStringAsFixed(2)}'),
             _buildDetailRow('Fecha registro:', _formatDate(user['joinDate'])),
           ],
         ),
@@ -333,9 +334,6 @@ class _UsersScreenState extends State<UsersScreen> {
 
   Future<void> _toggleUserStatus(Map<String, dynamic> user) async {
     try {
-      // TODO: Actualizar en Firestore
-      // await _firestoreService.updateUserStatus(user['id'], !user['isActive']);
-      
       setState(() {
         user['isActive'] = !user['isActive'];
       });
@@ -365,7 +363,8 @@ class _UsersScreenState extends State<UsersScreen> {
           ElevatedButton(
             onPressed: () => _deleteUser(user),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Eliminar', style: TextStyle(color: Colors.white)),
+            child:
+                const Text('Eliminar', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -375,10 +374,7 @@ class _UsersScreenState extends State<UsersScreen> {
   Future<void> _deleteUser(Map<String, dynamic> user) async {
     try {
       Navigator.pop(context); // Cerrar diálogo
-      
-      // TODO: Eliminar de Firestore
-      // await _firestoreService.deleteUser(user['id']);
-      
+
       setState(() {
         _users.removeWhere((u) => u['id'] == user['id']);
       });

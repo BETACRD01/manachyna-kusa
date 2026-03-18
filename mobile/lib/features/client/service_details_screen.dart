@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
-import '../../config/app_routes.dart';
+import '../../data/models/service_model.dart';
+import '../../data/models/user_model.dart';
 import '../../data/services/base_api_service.dart';
+import '../../providers/auth_provider.dart';
+import '../../config/routes/route_arguments.dart';
 
 class ServiceDetailsScreen extends StatefulWidget {
   final String serviceId;
-  final Map<String, dynamic>? serviceData;
+  final ServiceModel? serviceData;
 
   const ServiceDetailsScreen({
     super.key,
@@ -19,8 +21,8 @@ class ServiceDetailsScreen extends StatefulWidget {
 }
 
 class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
-  Map<String, dynamic>? serviceData;
-  Map<String, dynamic>? providerData;
+  ServiceModel? serviceData;
+  UserModel? providerData;
   bool isLoading = true;
 
   @override
@@ -37,29 +39,29 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
     try {
       debugPrint('Cargando detalles del servicio...');
 
-      if (serviceData == null || serviceData!.isEmpty) {
+      if (serviceData == null) {
         debugPrint('Cargando desde Django...');
         final apiService = BaseApiService();
         final response = await apiService.get('services/${widget.serviceId}/');
 
         if (response != null && response is Map<String, dynamic>) {
-          serviceData = response;
+          serviceData = ServiceModel.fromJson(response, widget.serviceId);
           debugPrint(
-              'Servicio cargado desde Django: ${serviceData!['title']}');
+              'Servicio cargado desde Django: ${serviceData!.title}');
         } else {
           debugPrint('Servicio no encontrado en Django');
         }
       }
 
-      if (serviceData != null && serviceData!['providerId'] != null) {
+      if (serviceData != null && serviceData!.providerId.isNotEmpty) {
         debugPrint('Cargando datos del proveedor...');
         final apiService = BaseApiService();
-        final providerId = serviceData!['providerId'];
+        final providerId = serviceData!.providerId;
         final response = await apiService.get('providers/$providerId/');
 
         if (response != null && response is Map<String, dynamic>) {
-          providerData = response;
-          debugPrint('Proveedor cargado: ${providerData!['name']}');
+          providerData = UserModel.fromJson(response, providerId);
+          debugPrint('Proveedor cargado: ${providerData!.name}');
         }
       }
     } catch (e) {
@@ -106,7 +108,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text(serviceData!['title'] ?? 'Detalles del Servicio'),
+        title: Text(serviceData?.title ?? 'Detalles del Servicio'),
         backgroundColor: Colors.indigo[600],
         foregroundColor: Colors.white,
         elevation: 0,
@@ -139,10 +141,10 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
       ),
       child: Stack(
         children: [
-          if (serviceData!['imageUrl'] != null)
+          if (serviceData!.images.isNotEmpty)
             Positioned.fill(
               child: Image.network(
-                serviceData!['imageUrl'],
+                serviceData!.images.first,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
@@ -180,7 +182,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    serviceData!['category'] ?? 'Servicio',
+                    serviceData!.category.displayName,
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
@@ -190,7 +192,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  serviceData!['title'] ?? 'Título del servicio',
+                  serviceData!.title,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -221,10 +223,10 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
   }
 
   Widget _buildServiceInfo() {
-    final price = (serviceData!['price'] ?? 0.0).toDouble();
-    final timeMode = serviceData!['timeMode'] ?? 'Por hora';
-    final rating = (serviceData!['rating'] ?? 0.0).toDouble();
-    final totalRatings = serviceData!['totalRatings'] ?? 0;
+    final price = serviceData!.basePrice;
+    final timeMode = serviceData!.pricing['timeUnit'] ?? 'Por trabajo';
+    final rating = serviceData!.rating;
+    final totalRatings = serviceData!.totalReviews;
 
     return Container(
       margin: const EdgeInsets.all(20),
@@ -302,7 +304,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            serviceData!['description'] ?? 'Sin descripción disponible',
+            serviceData!.description,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[700],
@@ -348,7 +350,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                 radius: 25,
                 backgroundColor: Colors.indigo[100],
                 child: Text(
-                  (providerData!['name'] ?? 'P').substring(0, 1).toUpperCase(),
+                  providerData!.name.substring(0, 1).toUpperCase(),
                   style: TextStyle(
                     color: Colors.indigo[600],
                     fontWeight: FontWeight.bold,
@@ -362,7 +364,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      providerData!['name'] ?? 'Proveedor',
+                      providerData!.name,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -370,7 +372,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      providerData!['email'] ?? '',
+                      providerData!.email,
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],
@@ -387,7 +389,7 @@ class _ServiceDetailsScreenState extends State<ServiceDetailsScreen> {
   }
 
   Widget _buildScheduleInfo() {
-    final workHours = serviceData!['workHours'] as Map<String, dynamic>?;
+    final workHours = serviceData!.pricing['workHours'] as Map<String, dynamic>?;
     if (workHours == null) return const SizedBox.shrink();
 
     final activeHours = workHours.entries

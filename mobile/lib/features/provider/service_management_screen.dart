@@ -150,9 +150,7 @@ class _ServiceManagementScreenState extends State<ServiceManagementScreen> {
         // Botón de notificaciones
         IconButton(
           icon: const Icon(Icons.notifications_outlined),
-          onPressed: () {
-            // TODO: Implementar sistema de notificaciones
-          },
+          onPressed: () {},
           tooltip: 'Notificaciones',
         ),
       ],
@@ -1521,13 +1519,11 @@ class _ServiceManagementScreenState extends State<ServiceManagementScreen> {
 
   /// Muestra reseñas específicas de un servicio
   void _showServiceRatings(Map<String, dynamic> data) {
-    // TODO: Implementar vista detallada de reseñas
     _showSnackBar('Vista de reseñas próximamente', Colors.blue);
   }
 
   /// Muestra análisis detallado de calificaciones
   void _showRatingAnalytics(Map<String, dynamic> data) {
-    // TODO: Implementar análisis de tendencias de calificaciones
     _showSnackBar('Análisis de calificaciones próximamente', Colors.purple);
   }
 

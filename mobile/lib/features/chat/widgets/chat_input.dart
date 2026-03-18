@@ -379,7 +379,7 @@ class _ChatInputState extends State<ChatInput> with TickerProviderStateMixin {
     try {
       await chatProvider.sendLocationMessage(
         chatId: widget.chatId,
-        latitude: 0.0, // TODO: Fetch real location
+        latitude: 0.0, //
         longitude: 0.0,
       );
     } catch (e) {

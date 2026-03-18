@@ -8,6 +8,9 @@ import '../../data/services/database_service.dart';
 import '../../shared/widgets/common/loading_widget.dart';
 import '../../core/constants/app_colors.dart';
 import '../../config/app_routes.dart';
+import '../../config/routes/route_arguments.dart';
+import '../../data/models/booking_model.dart';
+import '../../data/models/service_model.dart';
 import 'service_options_screen/widgets/service_header_widget.dart';
 import 'service_options_screen/widgets/services_grid_widget.dart';
 import 'service_options_screen/widgets/heavy_work_option_widget.dart';
@@ -536,26 +539,45 @@ class _ServiceOptionsScreenState extends State<ServiceOptionsScreen>
   void _onContinuePressed() {
     if (!hasSelectedServices) return;
 
-    // PREPARAR DATOS PARA PROVIDER SELECTION (estructura preservada).
-    final bookingData = {
-      'serviceData': serviceData,
-      'selectedOptions': selectedOptionsList,
-      'isHeavyWork': isHeavyWork,
-      'heavyWorkSurcharge': heavyWorkSurcharge,
-      'totalPrice': totalPrice,
-      'basePrice': serviceData['basePrice'],
-      'timestamp': DateTime.now().toIso8601String(),
-    };
+    // PREPARAR DATOS PARA PROVIDER SELECTION usando BookingModel.
+    final booking = BookingModel(
+      id: 'temp_${DateTime.now().millisecondsSinceEpoch}',
+      clientId: '', // Se llenará después
+      clientName: '',
+      clientPhone: '',
+      providerId: '',
+      providerName: '',
+      serviceId: args!.serviceId,
+      serviceTitle: args!.serviceName,
+      totalPrice: totalPrice,
+      scheduledDate: DateTime.now(),
+      address: '',
+      createdAt: DateTime.now(),
+      selectedOptions: selectedOptionsList,
+      isHeavyWork: isHeavyWork,
+      heavyWorkSurcharge: heavyWorkSurcharge,
+      serviceData: ServiceModel(
+        id: args!.serviceId,
+        title: args!.serviceName,
+        description: '',
+        category: ServiceModel.stringToCategory(args!.serviceCategory),
+        basePrice: args!.basePrice,
+        hourlyRate: 0.0,
+        providerId: '',
+        providerName: '',
+        createdAt: DateTime.now(),
+      ),
+    );
 
     debugPrint(
         'Navegando a Provider Selection con: ${selectedOptionsList.length} servicios, total: \$${totalPrice.toStringAsFixed(2)}');
 
-    // NAVEGAR A PROVIDER SELECTION (PASO 2/4) — ruta exacta preservada.
+    // NAVEGAR A PROVIDER SELECTION (PASO 2/4)
     Navigator.pushNamed(
       context,
       '/provider-selection',
       arguments: ProviderSelectionArguments(
-        bookingData: bookingData,
+        bookingData: booking,
       ),
     );
   }

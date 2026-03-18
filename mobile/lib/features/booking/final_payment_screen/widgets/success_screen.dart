@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
+import '../../../../data/models/booking_model.dart';
+
 class SuccessScreen extends StatelessWidget {
   final DateTime selectedDateTime;
-  final Map<String, dynamic> finalBookingData;
+  final BookingModel finalBookingData;
   final AnimationController successController;
   final Animation<double> successScaleAnimation;
   final VoidCallback onClose;
@@ -160,7 +162,7 @@ class SuccessScreen extends StatelessWidget {
 
 class _SuccessInfoCard extends StatelessWidget {
   final DateTime selectedDateTime;
-  final Map<String, dynamic> finalBookingData;
+  final BookingModel finalBookingData;
 
   const _SuccessInfoCard({
     required this.selectedDateTime,
@@ -183,20 +185,19 @@ class _SuccessInfoCard extends StatelessWidget {
         children: [
           _SuccessInfoRow(
             label: 'Servicio',
-            value: finalBookingData['serviceData']?['serviceName'] ?? 'Servicio',
+            value: finalBookingData.serviceTitle,
             icon: Icons.build_outlined,
           ),
           const SizedBox(height: 12),
           _SuccessInfoRow(
             label: 'Proveedor',
-            value: finalBookingData['selectedProvider']?['providerName'] ?? 
-                   finalBookingData['selectedProvider']?['providerData']?['name'] ?? 'Proveedor',
+            value: finalBookingData.providerName,
             icon: Icons.person_outline,
           ),
           const SizedBox(height: 12),
           _SuccessInfoRow(
             label: 'Total',
-            value: '\$${(finalBookingData['finalTotal'] ?? 0.0).toStringAsFixed(2)}',
+            value: '\$${finalBookingData.totalPrice.toStringAsFixed(2)}',
             icon: Icons.attach_money_outlined,
           ),
           const SizedBox(height: 12),

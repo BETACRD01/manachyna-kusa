@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import '../../../config/app_routes.dart';
+import '../../../config/routes/route_arguments.dart';
+import '../../../data/models/booking_model.dart';
+import '../../../data/models/service_model.dart';
+import '../../../data/models/user_model.dart';
 import '../../../shared/widgets/common/loading_widget.dart';
 import '../../../core/constants/app_colors.dart';
 import '../booking/provider_selection_screen/widgets/sorting_options.dart';
@@ -29,7 +33,7 @@ class ProviderSelectionScreen extends StatefulWidget {
 
 class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
   // ======================== VARIABLES DE ESTADO ========================
-  late Map<String, dynamic> bookingData = {};
+  BookingModel? bookingData;
   bool isLoading = true;
   List<Map<String, dynamic>> availableProviders = [];
   String? selectedProviderId;
@@ -59,11 +63,11 @@ class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
     if (args != null) {
       bookingData = args!.bookingData;
       debugPrint(
-          'ProviderSelection recibió datos de reserva: ${bookingData.keys.toList()}');
+          'ProviderSelection recibió datos de reserva: ${bookingData?.id}');
       debugPrint(
-          'Servicio solicitado: ${bookingData['serviceData']?['serviceName']}');
+          'Servicio solicitado: ${bookingData?.serviceTitle}');
       debugPrint(
-          'Categoría: ${bookingData['serviceData']?['serviceCategory']}');
+          'Categoría: ${bookingData?.serviceData?.category.displayName}');
     } else {
       bookingData = _getDefaultBookingData();
       debugPrint(
@@ -73,19 +77,22 @@ class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
     _loadProviders();
   }
 
-  Map<String, dynamic> _getDefaultBookingData() {
-    return {
-      'serviceData': {
-        'serviceId': 'default',
-        'serviceName': 'Servicio General',
-        'serviceCategory': 'General',
-        'basePrice': 15.0,
-      },
-      'selectedOptions': [],
-      'totalPrice': 15.0,
-      'finalTotal': 15.0,
-      'estimatedHours': 1,
-    };
+  BookingModel _getDefaultBookingData() {
+    return BookingModel(
+      id: 'default',
+      clientId: 'guest',
+      clientName: 'Invitado',
+      clientPhone: '',
+      providerId: '',
+      providerName: '',
+      serviceId: 'default',
+      serviceTitle: 'Servicio General',
+      totalPrice: 15.0,
+      scheduledDate: DateTime.now(),
+      address: '',
+      createdAt: DateTime.now(),
+      estimatedHours: 1,
+    );
   }
 
   // ======================== CARGA DE PROVEEDORES CORREGIDA ========================
@@ -258,7 +265,7 @@ class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
         // Si no hay especialidades, agregar una por defecto
         if (specialties.isEmpty) {
           final category =
-              bookingData['serviceData']?['serviceCategory'] ?? 'General';
+              bookingData?.serviceData?.category.displayName ?? 'General';
           specialties = [category];
         }
       } catch (e) {
@@ -742,22 +749,22 @@ class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
   }
 
   // ======================== SELECCIÓN DE PROVEEDOR ========================
-  void _selectProvider(Map<String, dynamic> provider) {
-    setState(() => selectedProviderId = provider['id']);
+  void _selectProvider(Map<String, dynamic> providerMap) {
+    final provider = UserModel.fromJson(providerMap, providerMap['id'] ?? '');
+    setState(() => selectedProviderId = provider.id);
 
-    // PREPARAR DATOS PARA PAYMENT SUMMARY
-    final updatedBookingData = Map<String, dynamic>.from(bookingData);
-    updatedBookingData['selectedProvider'] = provider;
-    updatedBookingData['providerId'] = provider['id'];
-    updatedBookingData['providerName'] = provider['name'];
-    updatedBookingData['providerRating'] = provider['rating'];
-    updatedBookingData['providerLocation'] = provider['location'];
+    // PREPARAR DATOS PARA PAYMENT SUMMARY usando BookingModel
+    final updatedBooking = bookingData!.copyWith(
+      providerId: provider.id,
+      providerName: provider.name,
+      providerData: provider,
+    );
 
-    _showConfirmationDialog(updatedBookingData);
+    _showConfirmationDialog(updatedBooking);
   }
 
-  void _showConfirmationDialog(Map<String, dynamic> updatedBookingData) {
-    final provider = updatedBookingData['selectedProvider'];
+  void _showConfirmationDialog(BookingModel updatedBooking) {
+    final provider = updatedBooking.providerData;
 
     showDialog(
       context: context,
@@ -804,7 +811,11 @@ class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
-            child: ConfirmationContent(provider: provider),
+            child: ConfirmationContent(
+              provider: provider!,
+              serviceName: updatedBooking.serviceTitle,
+              totalPrice: updatedBooking.totalPrice,
+            ),
           ),
         ),
         actions: [
@@ -839,7 +850,7 @@ class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      _proceedToPaymentSummary(updatedBookingData);
+                      _proceedToPaymentSummary(updatedBooking);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
@@ -876,23 +887,21 @@ class _ProviderSelectionScreenState extends State<ProviderSelectionScreen> {
   }
 
   // ======================== NAVEGACIÓN AL SIGUIENTE PASO ========================
-  void _proceedToPaymentSummary(Map<String, dynamic> updatedBookingData) {
+  void _proceedToPaymentSummary(BookingModel updatedBooking) {
     debugPrint(
-        'Navegando a Payment Summary con proveedor: ${updatedBookingData['providerName']}');
+        'Navegando a Payment Summary con proveedor: ${updatedBooking.providerName}');
 
     // NAVEGAR A PAYMENT SUMMARY (PASO 3/4) usando Navigator.pushNamed
     Navigator.pushNamed(
       context,
       '/payment-summary',
       arguments: PaymentSummaryArguments(
-        serviceData: updatedBookingData['serviceData'],
-        selectedOptions: List<Map<String, dynamic>>.from(
-            updatedBookingData['selectedOptions'] ?? []),
-        isHeavyWork: updatedBookingData['isHeavyWork'] ?? false,
-        heavyWorkSurcharge:
-            (updatedBookingData['heavyWorkSurcharge'] ?? 0.0).toDouble(),
-        selectedProvider: updatedBookingData['selectedProvider'],
-        bookingData: updatedBookingData,
+        serviceData: updatedBooking.serviceData!,
+        selectedOptions: updatedBooking.selectedOptions,
+        isHeavyWork: updatedBooking.isHeavyWork,
+        heavyWorkSurcharge: updatedBooking.heavyWorkSurcharge,
+        selectedProvider: updatedBooking.providerData,
+        bookingData: updatedBooking,
       ),
     );
   }

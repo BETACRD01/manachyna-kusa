@@ -135,8 +135,7 @@ class ProviderModel {
           'Valor es ${value.runtimeType}, esperaba número. Usando valor por defecto.');
       return defaultValue;
     }
-    logger.w(
-        'No se pudo convertir $value a double. Usando valor por defecto.');
+    logger.w('No se pudo convertir $value a double. Usando valor por defecto.');
     return defaultValue;
   }
 
@@ -171,8 +170,7 @@ class ProviderModel {
           'Valor es ${value.runtimeType}, esperaba bool. Usando valor por defecto.');
       return defaultValue;
     }
-    logger
-        .w('No se pudo convertir $value a bool. Usando valor por defecto.');
+    logger.w('No se pudo convertir $value a bool. Usando valor por defecto.');
     return defaultValue;
   }
 
@@ -244,7 +242,8 @@ class DatabaseService {
   }
 
   /// Obtiene reservas del proveedor
-  Future<List<Map<String, dynamic>>> getProviderBookings(String providerId) async {
+  Future<List<Map<String, dynamic>>> getProviderBookings(
+      String providerId) async {
     final response = await _apiService.get('bookings/?provider_id=$providerId');
     if (response is List) {
       return List<Map<String, dynamic>>.from(response);
@@ -298,8 +297,7 @@ class _ProviderProfileService {
 
     final data = await _firestoreService.getProvider(_providerId!);
     if (data.isEmpty) {
-      logger.w(
-          'No se encontraron datos del proveedor para ID: $_providerId');
+      logger.w('No se encontraron datos del proveedor para ID: $_providerId');
       throw Exception('Proveedor no encontrado');
     }
 
@@ -321,7 +319,8 @@ class _ProviderProfileService {
 
     logger.d('Obteniendo reservas del proveedor para ID: $_providerId');
 
-    final bookingsList = await _firestoreService.getProviderBookings(_providerId!);
+    final bookingsList =
+        await _firestoreService.getProviderBookings(_providerId!);
     return bookingsList
         .map((data) {
           try {
@@ -1418,9 +1417,7 @@ class _HelpSupportSection extends StatelessWidget {
                   title: const Text('Soporte Telefónico'),
                   subtitle: const Text('Lunes a Viernes: 8:00 AM - 6:00 PM'),
                   trailing: const Text('+593 99 123 4567'),
-                  onTap: () {
-                    // TODO: Implementar llamada telefónica
-                  },
+                  onTap: () {},
                 ),
                 const Divider(),
                 ListTile(
@@ -1428,9 +1425,7 @@ class _HelpSupportSection extends StatelessWidget {
                   title: const Text('Soporte por Email'),
                   subtitle: const Text('Respuesta en 24 horas'),
                   trailing: const Text('soporte@manachyna.com'),
-                  onTap: () {
-                    // TODO: Implementar envío de email
-                  },
+                  onTap: () {},
                 ),
                 const Divider(),
                 ListTile(
@@ -1438,9 +1433,7 @@ class _HelpSupportSection extends StatelessWidget {
                   title: const Text('Chat en Vivo'),
                   subtitle: const Text('Disponible 24/7'),
                   trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    // TODO: Implementar chat en vivo
-                  },
+                  onTap: () {},
                 ),
               ],
             ),
@@ -1462,9 +1455,7 @@ class _HelpSupportSection extends StatelessWidget {
                   title: const Text('Calificar la App'),
                   subtitle: const Text('Comparte tu experiencia'),
                   trailing: const Icon(Icons.arrow_forward_ios),
-                  onTap: () {
-                    // TODO: Implementar calificación en store
-                  },
+                  onTap: () {},
                 ),
               ],
             ),
@@ -1512,7 +1503,6 @@ class _HelpSupportSection extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO: Enviar reporte
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

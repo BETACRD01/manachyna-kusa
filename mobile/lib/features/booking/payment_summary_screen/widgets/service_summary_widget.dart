@@ -1,12 +1,8 @@
-// ============================================================================
-// WIDGET: RESUMEN DE SERVICIO
-// features/booking/widgets/service_summary_widget.dart
-// ============================================================================
-
 import 'package:flutter/material.dart';
+import '../../../../data/models/service_model.dart';
 
 class ServiceSummaryWidget extends StatelessWidget {
-  final Map<String, dynamic> serviceData;
+  final ServiceModel serviceData;
   final List<Map<String, dynamic>> selectedOptions;
   
   const ServiceSummaryWidget({
@@ -47,7 +43,7 @@ class ServiceSummaryWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: _buildServiceIcon(
-            serviceData['serviceCategory'], 
+            serviceData.category.value, 
             size: 24
           ),
         ),
@@ -57,14 +53,14 @@ class ServiceSummaryWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                serviceData['serviceName'] ?? 'Servicio',
+                serviceData.title,
                 style: const TextStyle(
                   fontSize: 18, 
                   fontWeight: FontWeight.bold
                 ),
               ),
               Text(
-                serviceData['serviceCategory'] ?? 'General',
+                serviceData.category.displayName,
                 style: TextStyle(
                   fontSize: 14, 
                   color: Colors.grey[600]

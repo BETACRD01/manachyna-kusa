@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../data/models/user_model.dart';
 
 class ConfirmationContent extends StatelessWidget {
-  final Map<String, dynamic> provider;
+  final UserModel provider;
+  final String serviceName;
+  final double totalPrice;
 
   const ConfirmationContent({
     super.key,
     required this.provider,
+    required this.serviceName,
+    required this.totalPrice,
   });
 
   @override
@@ -37,7 +42,7 @@ class ConfirmationContent extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
               TextSpan(
-                text: '${provider['name']}',
+                text: provider.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: AppColors.primaryColor,
@@ -84,10 +89,10 @@ class ConfirmationContent extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 24,
                   backgroundColor: AppColors.mediumGray.withAlpha(51),
-                  backgroundImage: provider['profileImage'] != null
-                      ? NetworkImage(provider['profileImage'])
+                  backgroundImage: provider.photoUrl != null
+                      ? NetworkImage(provider.photoUrl!)
                       : null,
-                  child: provider['profileImage'] == null
+                  child: provider.photoUrl == null
                       ? const Icon(Icons.person, size: 24, color: AppColors.textLight)
                       : null,
                 ),
@@ -98,7 +103,7 @@ class ConfirmationContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      provider['name'],
+                      provider.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,
@@ -121,7 +126,7 @@ class ConfirmationContent extends StatelessWidget {
                               const Icon(Icons.star_rounded, size: 12, color: Colors.amber),
                               const SizedBox(width: 2),
                               Text(
-                                '${provider['rating'].toStringAsFixed(1)}',
+                                provider.rating.toStringAsFixed(1),
                                 style: const TextStyle(
                                   fontSize: 12, 
                                   color: Colors.amber,
@@ -139,7 +144,7 @@ class ConfirmationContent extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            '\$${provider['pricePerHour'].toStringAsFixed(2)}/h',
+                            '\$${provider.pricePerHour.toStringAsFixed(2)}/h',
                              style: const TextStyle(
                               fontSize: 12, 
                               color: AppColors.warningColor,
@@ -148,6 +153,23 @@ class ConfirmationContent extends StatelessWidget {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Servicio: $serviceName',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textLight,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      'Total estimado: \$${totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.successColor,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),

@@ -11,6 +11,7 @@ class UserModel {
   final bool isActive;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final double pricePerHour;
   // Campos adicionales para estadísticas
   final bool isVerified;
   final int totalBookings;
@@ -38,6 +39,7 @@ class UserModel {
     this.completedJobs = 0,
     required this.joinDate,
     required this.lastActive,
+    this.pricePerHour = 15.0,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json, String id) {
@@ -70,6 +72,7 @@ class UserModel {
       joinDate: json['joinDate'] as int? ?? created.millisecondsSinceEpoch,
       lastActive:
           json['lastActive'] as int? ?? DateTime.now().millisecondsSinceEpoch,
+      pricePerHour: (json['pricePerHour'] ?? json['hourlyRate'] ?? json['price'] ?? 15.0).toDouble(),
     );
   }
 
@@ -92,6 +95,7 @@ class UserModel {
       'completedJobs': completedJobs,
       'joinDate': joinDate,
       'lastActive': lastActive,
+      'pricePerHour': pricePerHour,
     };
   }
 
@@ -113,6 +117,7 @@ class UserModel {
     int? completedJobs,
     int? joinDate,
     int? lastActive,
+    double? pricePerHour,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -132,6 +137,7 @@ class UserModel {
       completedJobs: completedJobs ?? this.completedJobs,
       joinDate: joinDate ?? this.joinDate,
       lastActive: lastActive ?? this.lastActive,
+      pricePerHour: pricePerHour ?? this.pricePerHour,
     );
   }
 

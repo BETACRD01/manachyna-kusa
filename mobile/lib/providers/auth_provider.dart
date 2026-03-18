@@ -5,12 +5,7 @@ import '../data/services/base_api_service.dart';
 import '../core/services/notification_service.dart';
 import '../shared/widgets/common/post_login_provider_modal.dart';
 import '../../core/utils/app_logger.dart';
-
-enum UserRole {
-  client,
-  provider,
-  admin,
-}
+import '../data/models/user_model.dart';
 
 // Enum para tipos de duración
 enum DurationType {
@@ -111,6 +106,9 @@ class AuthProvider extends ChangeNotifier {
   // Getters principales
   firebase_auth.User? get user => _user;
   firebase_auth.User? get currentUser => _user;
+  UserModel? get currentDatabaseUser => _userData != null && _user != null
+      ? UserModel.fromJson(_userData!, _user!.uid)
+      : null;
   UserType? get userType => _userType;
   Map<String, dynamic>? get userData => _userData;
   bool get isLoading => _isLoading;
@@ -370,7 +368,8 @@ class AuthProvider extends ChangeNotifier {
   void cancelBookingAndGoHome(BuildContext context) {
     clearPendingBooking();
     Navigator.of(context).popUntil((route) => route.isFirst);
-    Navigator.pushNamedAndRemoveUntil(context, '/client-home', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(
+        context, '/client-home', (route) => false);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -548,7 +547,8 @@ class AuthProvider extends ChangeNotifier {
       if (_userData != null && _user?.uid != null) {
         _userData!.addAll(newData);
         notifyListeners();
-        await _authService.updateUserProfile(uid: _user!.uid, userData: newData);
+        await _authService.updateUserProfile(
+            uid: _user!.uid, userData: newData);
       }
     } catch (e) {
       debugPrint('Error actualizando datos de perfil: $e');
@@ -610,7 +610,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     final double basePrice = widget.bookingData['basePrice']?.toDouble() ?? 0.0;
-    final double total = widget.bookingData['finalTotal']?.toDouble() ?? basePrice;
+    final double total =
+        widget.bookingData['finalTotal']?.toDouble() ?? basePrice;
 
     return Scaffold(
       appBar: AppBar(
@@ -628,7 +629,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
             Text('Proveedor: ${widget.providerData['providerName']}'),
             const Divider(),
             Text('Total: \$${total.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             CheckboxListTile(
               title: const Text('Acepto los términos'),
@@ -638,7 +640,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: acceptTerms && !isProcessing ? _processPayment : null,
-              child: isProcessing ? const CircularProgressIndicator() : const Text('Pagar'),
+              child: isProcessing
+                  ? const CircularProgressIndicator()
+                  : const Text('Pagar'),
             ),
           ],
         ),

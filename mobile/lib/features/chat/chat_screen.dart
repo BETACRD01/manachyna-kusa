@@ -35,12 +35,10 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen>
-    with WidgetsBindingObserver {
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   late final ScrollController _scrollController;
   String? _currentChatId;
   bool _isTyping = false;
-  // TODO: Conectar typing remoto si lo manejas en tu ChatProvider
   final bool _otherUserTyping = false;
 
   @override
@@ -150,7 +148,8 @@ class _ChatScreenState extends State<ChatScreen>
                 child: Consumer<ChatProvider>(
                   builder: (context, chatProvider, _) {
                     return StreamBuilder<List<Message>>(
-                      stream: Stream.fromFuture(chatProvider.getChatMessages(_currentChatId!)),
+                      stream: Stream.fromFuture(
+                          chatProvider.getChatMessages(_currentChatId!)),
                       builder: (context, snapshot) {
                         final state = snapshot.connectionState;
 
@@ -206,16 +205,14 @@ class _ChatScreenState extends State<ChatScreen>
                               final previous = msgIndex < messages.length - 1
                                   ? messages[msgIndex + 1]
                                   : null;
-                              final next = msgIndex > 0
-                                  ? messages[msgIndex - 1]
-                                  : null;
+                              final next =
+                                  msgIndex > 0 ? messages[msgIndex - 1] : null;
 
                               return RepaintBoundary(
                                 child: MessageBubble(
                                   message: msg,
                                   isMe: isMe,
-                                  previousMessageSenderId:
-                                      previous?.senderId,
+                                  previousMessageSenderId: previous?.senderId,
                                   nextMessageSenderId: next?.senderId,
                                 ),
                               );
@@ -440,8 +437,8 @@ class _ChatInfoSheet extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundColor:
-                                theme.colorScheme.primary.withValues(alpha: 0.12),
+                            backgroundColor: theme.colorScheme.primary
+                                .withValues(alpha: 0.12),
                             child: Text(
                               (otherUserName.isNotEmpty
                                       ? otherUserName[0]

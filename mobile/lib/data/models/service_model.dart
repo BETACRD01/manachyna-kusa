@@ -95,7 +95,7 @@ class ServiceModel {
       id: id,
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      category: _stringToCategory(json['category'] ?? 'otro'),
+      category: stringToCategory(json['category'] ?? 'otro'),
       basePrice: (json['basePrice'] ?? 0).toDouble(),
       hourlyRate: (json['hourlyRate'] ?? 0).toDouble(),
       providerId: json['providerId'] ?? '',
@@ -143,7 +143,7 @@ class ServiceModel {
     return null;
   }
 
-  static ServiceCategory _stringToCategory(String categoryString) {
+  static ServiceCategory stringToCategory(String categoryString) {
     switch (categoryString.toLowerCase()) {
       case 'limpieza':
         return ServiceCategory.cleaning;

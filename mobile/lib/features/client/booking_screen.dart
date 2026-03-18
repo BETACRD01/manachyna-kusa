@@ -1,15 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../data/services/base_api_service.dart';
-import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:provider/provider.dart';
+import '../../data/models/service_model.dart';
+import '../../data/models/user_model.dart';
+import '../../data/services/base_api_service.dart';
+import '../../providers/auth_provider.dart';
 
 class BookingScreen extends StatefulWidget {
   final String serviceId;
-  final Map<String, dynamic> serviceData;
-  final Map<String, dynamic>? providerData;
+  final ServiceModel serviceData;
+  final UserModel? providerData;
 
   const BookingScreen({
     super.key,
@@ -109,11 +110,11 @@ class _BookingScreenState extends State<BookingScreen> {
               borderRadius: BorderRadius.circular(10),
               color: Colors.indigo[100],
             ),
-            child: widget.serviceData['imageUrl'] != null
+            child: widget.serviceData.images.isNotEmpty
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(
-                      widget.serviceData['imageUrl'],
+                      widget.serviceData.images.first,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Icon(
@@ -136,7 +137,7 @@ class _BookingScreenState extends State<BookingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.serviceData['title'] ?? 'Servicio',
+                  widget.serviceData.title,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -144,7 +145,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  widget.serviceData['category'] ?? 'Categoría',
+                  widget.serviceData.category.displayName,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -152,7 +153,7 @@ class _BookingScreenState extends State<BookingScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  widget.providerData?['name'] ?? 'Proveedor',
+                  widget.providerData?.name ?? 'Proveedor',
                   style: TextStyle(
                     fontSize: 12,
                     color: Colors.grey[500],
@@ -874,7 +875,7 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _buildPriceSummary() {
-    final price = (widget.serviceData['price'] ?? 0.0).toDouble();
+    final price = widget.serviceData.basePrice;
     final multiplier = _getDurationMultiplier(selectedDuration);
     final totalPrice = price * multiplier;
 
@@ -900,7 +901,7 @@ class _BookingScreenState extends State<BookingScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Precio base (${widget.serviceData['timeMode'] ?? 'Por hora'})',
+                'Precio base (${widget.serviceData.pricing['timeUnit'] ?? 'Por hora'})',
                 style: TextStyle(color: Colors.grey[700]),
               ),
               Text(
@@ -1225,7 +1226,7 @@ class _BookingScreenState extends State<BookingScreen> {
         debugPrint('AuthProvider no disponible, usando valores por defecto');
       }
 
-      final price = (widget.serviceData['price'] ?? 0.0).toDouble();
+      final price = widget.serviceData.basePrice;
       final multiplier = _getDurationMultiplier(selectedDuration);
       final totalPrice = price * multiplier;
 
@@ -1239,11 +1240,12 @@ class _BookingScreenState extends State<BookingScreen> {
 
       final bookingData = {
         'clientId': userId,
-        'providerId': widget.serviceData['providerId'] ?? 'unknown_provider',
+        'providerId': widget.serviceData.providerId,
         'serviceId': widget.serviceId,
-        'serviceTitle': widget.serviceData['title'] ?? 'Servicio',
-        'serviceCategory': widget.serviceData['category'] ?? 'General',
-        'providerName': widget.providerData?['name'] ?? 'Proveedor',
+        'serviceTitle': widget.serviceData.title,
+        'serviceCategory': widget.serviceData.category.displayName,
+        'providerName': widget.providerData?.name ?? 'Proveedor',
+        'providerEmail': widget.providerData?.email ?? '',
         'clientName': userName,
         'clientEmail': userEmail,
         'date': selectedDate?.toIso8601String(),

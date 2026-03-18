@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../utils/service_icons.dart';
 
+import '../../../../data/models/service_model.dart';
+
 class ServiceSummaryCard extends StatelessWidget {
-  final Map<String, dynamic> serviceData;
-  final List<dynamic> selectedOptions;
+  final ServiceModel serviceData;
+  final List<Map<String, dynamic>> selectedOptions;
 
   const ServiceSummaryCard({
     super.key,
@@ -45,7 +47,7 @@ class ServiceSummaryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
-                    ServiceIcons.getIcon(serviceData['serviceCategory']),
+                    ServiceIcons.getIcon(serviceData.category),
                     color: AppColors.cardWhite,
                     size: 24,
                   ),
@@ -64,7 +66,7 @@ class ServiceSummaryCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        serviceData['serviceName'] ?? 'Servicio',
+                        serviceData.title,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,

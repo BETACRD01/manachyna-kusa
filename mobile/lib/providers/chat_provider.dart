@@ -12,7 +12,6 @@ class ChatProvider extends ChangeNotifier {
   bool _isRecording = false;
   bool _isUploading = false;
 
-
   bool get isRecording => _isRecording;
   bool get isUploading => _isUploading;
 
@@ -99,8 +98,6 @@ class ChatProvider extends ChangeNotifier {
       );
       if (image == null) return;
 
-      // TODO: Implementar subida de archivos multipart en BaseApiService
-      // Por ahora simulamos con el path local o fallamos elegantemente
       AppLogger.w(
           'Subida de imágenes a Django aún requiere implementación multipart.');
 
@@ -129,7 +126,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Future<List<Chat>> getUserChats(String userId) async {
-    return getMyChats(); 
+    return getMyChats();
   }
 
   Future<bool> isUserBlocked(String currentUserId, String otherUserId) async {
@@ -154,7 +151,8 @@ class ChatProvider extends ChangeNotifier {
 
   Future<void> blockUser(String currentUserId, String otherUserId) async {
     try {
-      await _apiService.post('users/$currentUserId/block/', body: {'otherUserId': otherUserId});
+      await _apiService.post('users/$currentUserId/block/',
+          body: {'otherUserId': otherUserId});
     } catch (e) {
       AppLogger.e('Error blocking user: $e');
     }
@@ -162,7 +160,8 @@ class ChatProvider extends ChangeNotifier {
 
   Future<void> unblockUser(String currentUserId, String otherUserId) async {
     try {
-      await _apiService.post('users/$currentUserId/unblock/', body: {'otherUserId': otherUserId});
+      await _apiService.post('users/$currentUserId/unblock/',
+          body: {'otherUserId': otherUserId});
     } catch (e) {
       AppLogger.e('Error unblocking user: $e');
     }

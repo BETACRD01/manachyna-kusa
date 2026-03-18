@@ -8,7 +8,8 @@
 // - Se muestra información bancaria fija para realizar la transferencia
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+
 
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -19,6 +20,11 @@ import 'payment_summary_screen/widgets/price_breakdown_widget.dart';
 import 'payment_summary_screen/utils/payment_calculator.dart';
 import '../../../config/app_routes.dart' as nav;
 import '../../../config/app_routes.dart';
+import '../../../data/models/service_model.dart';
+import '../../../data/models/booking_model.dart';
+import '../../../data/models/user_model.dart';
+import '../../../providers/auth_provider.dart' as app_auth;
+import '../../../config/routes/route_arguments.dart';
 
 class PaymentSummaryScreen extends StatefulWidget {
   final PaymentSummaryArguments? arguments;
@@ -34,12 +40,12 @@ class PaymentSummaryScreen extends StatefulWidget {
 
 class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
     with TickerProviderStateMixin {
-  late Map<String, dynamic> serviceData;
+  late ServiceModel serviceData;
   late List<Map<String, dynamic>> selectedOptions;
   late bool isHeavyWork;
   late double heavyWorkSurcharge;
-  late Map<String, dynamic> selectedProvider;
-  late Map<String, dynamic> bookingData;
+  late UserModel? selectedProvider;
+  late BookingModel? bookingData;
   PaymentSummaryArguments? args;
 
   String selectedPaymentMethod = 'efectivo';
@@ -152,38 +158,44 @@ class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
   }
 
   void _getDataFromArguments() {
-    args = widget.arguments ??
-        ModalRoute.of(context)?.settings.arguments as PaymentSummaryArguments?;
+    final rawArgs =
+        widget.arguments ?? ModalRoute.of(context)?.settings.arguments;
 
-    if (args != null) {
+    if (rawArgs is PaymentSummaryArguments) {
+      args = rawArgs;
       serviceData = args!.serviceData;
       selectedOptions = args!.selectedOptions;
       isHeavyWork = args!.isHeavyWork;
       heavyWorkSurcharge = args!.heavyWorkSurcharge;
-      selectedProvider = args!.selectedProvider ?? {};
-      bookingData = args!.bookingData ?? {};
+      selectedProvider = args!.selectedProvider;
+      bookingData = args!.bookingData;
 
       debugPrint('PaymentSummary inicializado con:');
-      debugPrint('   - Servicio: ${serviceData['serviceName']}');
-      debugPrint('   - Proveedor: ${selectedProvider['name']}');
+      debugPrint('   - Servicio: ${serviceData.title}');
+      debugPrint('   - Proveedor: ${selectedProvider?.name}');
     } else {
       serviceData = _getDefaultServiceData();
       selectedOptions = [];
       isHeavyWork = false;
       heavyWorkSurcharge = 0.0;
-      selectedProvider = {};
-      bookingData = {};
+      selectedProvider = null;
+      bookingData = null;
       debugPrint('PaymentSummary usando datos por defecto');
     }
   }
 
-  Map<String, dynamic> _getDefaultServiceData() {
-    return {
-      'serviceId': 'default',
-      'serviceName': 'Servicio de Limpieza',
-      'serviceCategory': 'limpieza',
-      'basePrice': 15.0,
-    };
+  ServiceModel _getDefaultServiceData() {
+    return ServiceModel(
+      id: 'default',
+      title: 'Servicio de Limpieza',
+      description: 'Default service',
+      category: ServiceCategory.cleaning,
+      basePrice: 15.0,
+      hourlyRate: 15.0,
+      providerId: 'default_provider',
+      providerName: 'Default Provider',
+      createdAt: DateTime.now(),
+    );
   }
 
   @override
@@ -250,7 +262,7 @@ class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (selectedProvider.isNotEmpty) _buildProviderSummary(),
+                  if (selectedProvider != null) _buildProviderSummary(),
                   const SizedBox(height: 24),
                   ServiceSummaryWidget(
                     serviceData: serviceData,
@@ -322,11 +334,11 @@ class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
             children: [
               CircleAvatar(
                 radius: 25,
-                backgroundImage: selectedProvider['profileImage'] != null
-                    ? NetworkImage(selectedProvider['profileImage'])
+                backgroundImage: selectedProvider?.photoUrl != null
+                    ? NetworkImage(selectedProvider!.photoUrl!)
                     : null,
                 backgroundColor: Colors.grey[300],
-                child: selectedProvider['profileImage'] == null
+                child: selectedProvider?.photoUrl == null
                     ? const Icon(Icons.person, color: Colors.white)
                     : null,
               ),
@@ -336,7 +348,7 @@ class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      selectedProvider['name'] ?? 'Proveedor',
+                      selectedProvider?.name ?? 'Proveedor',
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600),
                     ),
@@ -345,20 +357,20 @@ class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
                         Icon(Icons.star, color: Colors.amber[700], size: 16),
                         const SizedBox(width: 4),
                         Text(
-                          '${selectedProvider['rating']?.toStringAsFixed(1) ?? '0.0'}',
+                          selectedProvider?.rating.toStringAsFixed(1) ?? '0.0',
                           style: const TextStyle(
                               fontSize: 14, color: Colors.black87),
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          '${selectedProvider['completedJobs'] ?? 0} trabajos',
+                          '${selectedProvider?.completedJobs ?? 0} trabajos',
                           style:
                               TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
                       ],
                     ),
                     Text(
-                      selectedProvider['location'] ?? 'Tena',
+                      selectedProvider?.address ?? 'Tena',
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
@@ -974,57 +986,43 @@ class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
   void _onReservePressed() {
     debugPrint('\n=== BOTÓN IR A PAGAR PRESIONADO ===');
 
-    final calculatorData = calculator.toBookingData();
+    final authProvider =
+        Provider.of<app_auth.AuthProvider>(context, listen: false);
+    final currentUser = authProvider.currentUser;
 
-    final Map<String, dynamic> finalData = {
-      'selectedOptions': selectedOptions,
-      'selectedProvider': selectedProvider,
-      ...calculatorData,
-      'serviceCategory': serviceData['serviceCategory'] ?? 'limpieza',
-      'serviceTitle': serviceData['serviceName'] ?? 'Servicio solicitado',
-      'receiptImageUrl':
-          selectedPaymentMethod == 'transferencia' && receiptImagePath != null
-              ? receiptImagePath
-              : null,
-      'paymentMethod': selectedPaymentMethod,
-      'transferData': selectedPaymentMethod == 'transferencia'
-          ? {
-              'receiptImagePath': receiptImagePath,
-              'bankInfo': companyBankInfo,
-              'isReceiptUploaded': isReceiptUploaded,
-            }
-          : null,
-      'timestamp': DateTime.now().toIso8601String(),
-      'estimatedHours': 1,
-    };
-
-    debugPrint('Datos preparados para Final Payment:');
-    debugPrint('  - Servicio: ${finalData['serviceTitle']}');
-    debugPrint('  - Proveedor: ${selectedProvider['name']}');
-    debugPrint('  - Final Total: \${calculator.finalTotal.toStringAsFixed(2)}');
-    debugPrint('  - Método de pago: $selectedPaymentMethod');
-    debugPrint('  - Comprobante subido: $isReceiptUploaded');
-
-    if (FirebaseAuth.instance.currentUser == null) {
+    if (currentUser == null) {
       _showSnackBar('Inicia sesión para continuar con tu reserva');
-      Navigator.pushNamed(
+      nav.AppNavigator.toLogin(
         context,
-        '/login',
-        arguments: {
-          'fromBooking': true,
-          'returnTo': '/final-payment',
-          'bookingData': finalData,
-        },
+        fromBooking: true,
+        returnTo: nav.AppRoutes.finalPayment,
       );
       return;
     }
 
-    Navigator.pushNamed(
+    // Construir un BookingModel completo para el siguiente paso
+    final finalBooking = BookingModel(
+      id: bookingData?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      clientId: currentUser.uid,
+      clientName: currentUser.displayName ?? 'Cliente',
+      clientPhone: currentUser.phoneNumber ?? '',
+      providerId: selectedProvider?.id ?? '',
+      providerName: selectedProvider?.name ?? '',
+      serviceId: serviceData.id,
+      serviceTitle: serviceData.title,
+      totalPrice: calculator.finalTotal,
+      scheduledDate: bookingData?.scheduledDate ?? DateTime.now(),
+      address: selectedProvider?.address ?? 'Dirección no especificada',
+      createdAt: bookingData?.createdAt ?? DateTime.now(),
+      status: BookingStatus.pending,
+      serviceData: serviceData,
+      providerData: selectedProvider,
+      paymentMethod: selectedPaymentMethod,
+    );
+
+    nav.AppNavigator.toFinalPayment(
       context,
-      nav.AppRoutes.finalPayment,
-      arguments: FinalPaymentArguments(
-        finalBookingData: finalData,
-      ),
+      finalBookingData: finalBooking,
     );
   }
 
@@ -1153,7 +1151,8 @@ class _PaymentSummaryScreenState extends State<PaymentSummaryScreen>
 
       debugPrint('Simulando subida de comprobante al backend Django...');
       await Future.delayed(const Duration(seconds: 2));
-      final String downloadUrl = 'https://backend.example.com/media/receipts/$uniqueFileName';
+      final String downloadUrl =
+          'https://backend.example.com/media/receipts/$uniqueFileName';
 
       debugPrint('Comprobante subido exitosamente: $downloadUrl');
       return downloadUrl;

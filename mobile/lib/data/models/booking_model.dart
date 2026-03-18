@@ -1,3 +1,6 @@
+import 'service_model.dart';
+import 'user_model.dart';
+
 enum BookingStatus {
   pending,
   confirmed,
@@ -66,6 +69,14 @@ class BookingModel {
   final DateTime? completedAt;
   final DateTime? cancelledAt;
 
+  // Campos adicionales para flujo de UI y datos complejos
+  final ServiceModel? serviceData;
+  final UserModel? providerData;
+  final String? paymentMethod;
+  final List<Map<String, dynamic>> selectedOptions;
+  final bool isHeavyWork;
+  final double heavyWorkSurcharge;
+
   BookingModel({
     required this.id,
     required this.clientId,
@@ -88,6 +99,12 @@ class BookingModel {
     this.updatedAt,
     this.completedAt,
     this.cancelledAt,
+    this.serviceData,
+    this.providerData,
+    this.paymentMethod,
+    this.selectedOptions = const [],
+    this.isHeavyWork = false,
+    this.heavyWorkSurcharge = 0.0,
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json, String id) {
@@ -113,6 +130,16 @@ class BookingModel {
       updatedAt: _parseDateNullable(json['updated_at']),
       completedAt: _parseDateNullable(json['completed_at']),
       cancelledAt: _parseDateNullable(json['cancelled_at']),
+      serviceData: json['service_data'] != null 
+          ? ServiceModel.fromJson(json['service_data'], json['service_id'] ?? '') 
+          : null,
+      providerData: json['provider_data'] != null 
+          ? UserModel.fromJson(json['provider_data'], json['provider_id'] ?? '') 
+          : null,
+      paymentMethod: json['payment_method'],
+      selectedOptions: List<Map<String, dynamic>>.from(json['selected_options'] ?? []),
+      isHeavyWork: json['is_heavy_work'] ?? false,
+      heavyWorkSurcharge: (json['heavy_work_surcharge'] ?? 0.0).toDouble(),
     );
   }
 
@@ -138,6 +165,12 @@ class BookingModel {
       'updated_at': updatedAt?.toIso8601String(),
       'completed_at': completedAt?.toIso8601String(),
       'cancelled_at': cancelledAt?.toIso8601String(),
+      if (serviceData != null) 'service_data': serviceData!.toJson(),
+      if (providerData != null) 'provider_data': providerData!.toJson(),
+      'payment_method': paymentMethod,
+      'selected_options': selectedOptions,
+      'is_heavy_work': isHeavyWork,
+      'heavy_work_surcharge': heavyWorkSurcharge,
     };
   }
 
@@ -190,15 +223,23 @@ class BookingModel {
     DateTime? updatedAt,
     DateTime? completedAt,
     DateTime? cancelledAt,
+    String? providerId,
+    String? serviceId,
+    ServiceModel? serviceData,
+    UserModel? providerData,
+    String? paymentMethod,
+    List<Map<String, dynamic>>? selectedOptions,
+    bool? isHeavyWork,
+    double? heavyWorkSurcharge,
   }) {
     return BookingModel(
       id: id,
       clientId: clientId,
       clientName: clientName ?? this.clientName,
       clientPhone: clientPhone ?? this.clientPhone,
-      providerId: providerId,
+      providerId: providerId ?? this.providerId,
       providerName: providerName ?? this.providerName,
-      serviceId: serviceId,
+      serviceId: serviceId ?? this.serviceId,
       serviceTitle: serviceTitle ?? this.serviceTitle,
       totalPrice: totalPrice ?? this.totalPrice,
       scheduledDate: scheduledDate ?? this.scheduledDate,
@@ -210,9 +251,15 @@ class BookingModel {
       rating: rating ?? this.rating,
       review: review ?? this.review,
       createdAt: createdAt,
-      updatedAt: updatedAt ?? DateTime.now(),
+      updatedAt: updatedAt ?? this.updatedAt,
       completedAt: completedAt ?? this.completedAt,
       cancelledAt: cancelledAt ?? this.cancelledAt,
+      serviceData: serviceData ?? this.serviceData,
+      providerData: providerData ?? this.providerData,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      selectedOptions: selectedOptions ?? this.selectedOptions,
+      isHeavyWork: isHeavyWork ?? this.isHeavyWork,
+      heavyWorkSurcharge: heavyWorkSurcharge ?? this.heavyWorkSurcharge,
     );
   }
 
