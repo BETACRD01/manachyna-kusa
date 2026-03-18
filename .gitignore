@@ -43,4 +43,5 @@ build/
 ios/Flutter/Generated.xcconfig
 ios/Flutter/flutter_export_environment.sh
 ios/Flutter/Flutter.podspec
-ios/Flutter/Flutter.frameworkbackend/config/firebase/service-account.json
+ios/Flutter/Flutter.framework
+backend/config/firebase/service-account.json
